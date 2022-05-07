@@ -2,6 +2,11 @@
 
 Standardize your [DRF](https://www.django-rest-framework.org/) API error responses.
 
+![Read the Docs](https://img.shields.io/readthedocs/drf-standardized-errors)
+![PyPI](https://img.shields.io/pypi/v/drf-standardized-errors)
+![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 By default, the API error responses (4xx and 5xx) will look like:
 
 ```json
@@ -56,12 +61,21 @@ REST_FRAMEWORK = {
 }
 ```
 
-## Notes
+### Notes
 Standardized error responses when `DEBUG=True` for **unhandled exceptions** are disabled by default. That is
 to allow you to get more information out of the traceback. You can enable standardized errors instead with:
 ```python
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 ```
+
+
+## Links
+
+- Documentation: https://drf-standardized-errors.readthedocs.io/en/latest/
+- Changelog: https://github.com/ghazi-git/drf-standardized-errors/blob/main/docs/changelog.md
+- Code & issues: https://github.com/ghazi-git/drf-standardized-errors
+- PyPI: https://pypi.org/project/drf-standardized-errors/
+
 
 ## Licence
 
