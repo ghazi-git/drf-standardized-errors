@@ -7,9 +7,10 @@ The release is automated using [tbump](https://github.com/dmerejkowsky/tbump). S
 
 That's it, the package should then be available on PyPI.
 
+For the documentation, it is built automatically on every commit to the main branch. It can be found
+[here](https://drf-standardized-errors.readthedocs.io/en/latest/).
+
 ### Next in automation
-- the docs should be built automatically on every release. [This](https://blog.readthedocs.com/automation-rules/)
-should help.
 - Readthedocs has [webhooks](https://docs.readthedocs.io/en/stable/build-notifications.html#build-status-webhooks)
 that can be used as the trigger for creating a release on GitHub. Then, we need some way to use GitHub API
 to actually create the release with a link to the changelog (or a copy of it). A candidate for taking care
