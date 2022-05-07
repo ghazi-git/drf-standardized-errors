@@ -1,0 +1,34 @@
+# https://github.com/marketplace/actions/changelog-reader#example-workflow---create-a-release-from-changelog
+on:
+  push:
+    tags:
+    - "v*"
+
+name: Create GitHub Release
+
+jobs:
+  build:
+    name: Parse release notes from changelog and create a GitHub release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get version from tag
+        id: tag_name
+        run: |
+          echo ::set-output name=current_version::${GITHUB_REF#refs/tags/v}
+        shell: bash
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Get Changelog Entry
+        id: changelog_reader
+        uses: mindsers/changelog-reader-action@v2
+        with:
+          version: ${{ steps.tag_name.outputs.current_version }}
+          path: docs/changelog.md
+      - name: Create/update release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.changelog_reader.outputs.version }}
+          name: Release ${{ steps.changelog_reader.outputs.version }}
+          body: ${{ steps.changelog_reader.outputs.changes }}
+          allowUpdates: true
+          token: ${{ secrets.GITHUB_TOKEN }}

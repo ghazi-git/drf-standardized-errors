@@ -5,16 +5,13 @@ The release is automated using [tbump](https://github.com/dmerejkowsky/tbump). S
 - run `pip install .[release]` (preferably inside a virtualenv) 
 - run `tbump <new_version>` (e.g. `tbump 0.6.0`).
 
-That's it, the package should then be available on PyPI.
+That's it, the package should then be available on [PyPI](https://pypi.org/project/drf-standardized-errors/).
+
+As part of the previous step, a GitHub release is created since a new tag is pushed. That's automated
+[using GitHub actions](https://github.com/ghazi-git/drf-standardized-errors/actions/workflows/github_release.yml).
 
 For the documentation, it is built automatically on every commit to the main branch. It can be found
 [here](https://drf-standardized-errors.readthedocs.io/en/latest/).
-
-### Next in automation
-- Readthedocs has [webhooks](https://docs.readthedocs.io/en/stable/build-notifications.html#build-status-webhooks)
-that can be used as the trigger for creating a release on GitHub. Then, we need some way to use GitHub API
-to actually create the release with a link to the changelog (or a copy of it). A candidate for taking care
-of this is a [GitHub action](https://github.com/softprops/action-gh-release).
 
 ## Manual Release Steps
 
