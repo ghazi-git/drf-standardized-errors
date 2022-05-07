@@ -1,0 +1,67 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "drf-standardized-errors"
+requires-python = ">=3.8"
+authors = [{ name = "Ghazi Abbassi" }]
+license = { file = "LICENSE" }
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+dynamic = ["version", "description"]
+dependencies = [
+    "django >=3.2",
+    "djangorestframework >=3.12",
+]
+
+[tool.flit.module]
+name = "drf_standardized_errors"
+
+[project.optional-dependencies]
+dev = ["pre-commit"]
+doc = [
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-rtd-theme",
+    "myst-parser",
+]
+test = ["tox"]
+release = [
+    "flit",
+    "keyring",
+    "tbump",
+]
+
+[tool.tbump]
+
+[tool.tbump.version]
+current = "0.8.0"
+regex = '''
+  (?P<major>\d+)
+  \.
+  (?P<minor>\d+)
+  \.
+  (?P<patch>\d+)
+  '''
+
+[tool.tbump.git]
+message_template = "Bump to {new_version}"
+tag_template = "v{new_version}"
+
+[[tool.tbump.file]]
+src = "drf_standardized_errors/__init__.py"
+search = '__version__ = "{current_version}"'
+
+[[tool.tbump.before_commit]]
+name = "Update the changelog"
+cmd = "python release/update_changelog.py --new-version {new_version}"
+
+[[tool.tbump.after_push]]
+name = "Publish to PyPI"
+cmd = "flit publish"
