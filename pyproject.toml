@@ -41,7 +41,10 @@ doc = [
     "sphinx-rtd-theme",
     "myst-parser",
 ]
-test = ["tox"]
+test = [
+    "tox",
+    "tox-gh-actions",
+]
 release = [
     "flit",
     "keyring",
