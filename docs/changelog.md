@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Build the documentation automatically on every commit to the main branch. The docs are
 [hosted on readthedocs](https://drf-standardized-errors.readthedocs.io/en/latest/).
+- Add package metadata
 
 ## [0.9.0] - 2022-05-07
 ### Added
