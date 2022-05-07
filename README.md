@@ -2,9 +2,9 @@
 
 Standardize your [DRF](https://www.django-rest-framework.org/) API error responses.
 
-![Read the Docs](https://img.shields.io/readthedocs/drf-standardized-errors)
-![PyPI](https://img.shields.io/pypi/v/drf-standardized-errors)
-![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)
+[![Read the Docs](https://img.shields.io/readthedocs/drf-standardized-errors)](https://drf-standardized-errors.readthedocs.io/en/latest/)
+[![PyPI](https://img.shields.io/pypi/v/drf-standardized-errors)](https://pypi.org/project/drf-standardized-errors/)
+[![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 By default, the API error responses (4xx and 5xx) will look like:
