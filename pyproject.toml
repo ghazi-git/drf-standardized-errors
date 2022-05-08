@@ -4,7 +4,12 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "drf-standardized-errors"
-keywords = ["standardized errors", "errors formatter", "django rest framework"]
+keywords = [
+    "standardized errors",
+    "errors formatter",
+    "django rest framework",
+    "exception handler",
+]
 authors = [{ name = "Ghazi Abbassi" }]
 license = { file = "LICENSE" }
 readme = "README.md"
@@ -24,11 +29,11 @@ dependencies = [
 ]
 
 [project.urls]
-homepage = "https://github.com/ghazi-git/drf-standardized-errors"
-documentation = "https://drf-standardized-errors.readthedocs.io/en/latest/"
-code = "https://github.com/ghazi-git/drf-standardized-errors"
-issues = "https://github.com/ghazi-git/drf-standardized-errors/issues"
-changelog = "https://github.com/ghazi-git/drf-standardized-errors/blob/main/docs/changelog.md"
+Homepage = "https://github.com/ghazi-git/drf-standardized-errors"
+Documentation = "https://drf-standardized-errors.readthedocs.io/en/latest/"
+Code = "https://github.com/ghazi-git/drf-standardized-errors"
+Issues = "https://github.com/ghazi-git/drf-standardized-errors/issues"
+Changelog = "https://github.com/ghazi-git/drf-standardized-errors/blob/main/docs/changelog.md"
 
 [tool.flit.module]
 name = "drf_standardized_errors"
