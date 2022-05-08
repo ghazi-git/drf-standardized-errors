@@ -59,7 +59,7 @@ release = [
 [tool.tbump]
 
 [tool.tbump.version]
-current = "0.10.1"
+current = "0.10.2"
 regex = '''
   (?P<major>\d+)
   \.
