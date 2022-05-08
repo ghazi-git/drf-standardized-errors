@@ -1,7 +1,9 @@
 from unittest.mock import MagicMock
 
 import pytest
+from django.core.exceptions import PermissionDenied as DjangoPermissionDenied
 from django.core.signals import got_request_exception
+from django.http import Http404
 from rest_framework.exceptions import (
     APIException,
     ErrorDetail,
@@ -111,3 +113,33 @@ def test_got_request_exception_signal_not_sent(validation_error, exception_conte
 
     exception_handler(validation_error, exception_context)
     assert mock.called is False
+
+
+@pytest.fixture
+def django_permission_denied():
+    return DjangoPermissionDenied()
+
+
+def test_django_permission_denied_conversion(
+    django_permission_denied, exception_context
+):
+    response = exception_handler(django_permission_denied, exception_context)
+    assert response.status_code == 403
+    assert response.data["type"] == "client_error"
+    assert len(response.data["errors"]) == 1
+    error = response.data["errors"][0]
+    assert error["code"] == "permission_denied"
+
+
+@pytest.fixture
+def http404_error():
+    return Http404()
+
+
+def test_django_http404_conversion(http404_error, exception_context):
+    response = exception_handler(http404_error, exception_context)
+    assert response.status_code == 404
+    assert response.data["type"] == "client_error"
+    assert len(response.data["errors"]) == 1
+    error = response.data["errors"][0]
+    assert error["code"] == "not_found"
