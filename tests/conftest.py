@@ -1,7 +1,7 @@
 import pytest
 from rest_framework.test import APIClient, APIRequestFactory
 
-from tests.views import ErrorView
+from .views import ErrorView
 
 
 @pytest.fixture

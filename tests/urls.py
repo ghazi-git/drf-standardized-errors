@@ -1,6 +1,6 @@
 from django.urls import path
 
-from tests.views import ErrorView, IntegrityErrorView, OrderErrorView
+from .views import ErrorView, IntegrityErrorView, OrderErrorView
 
 urlpatterns = [
     path("integrity-error/", IntegrityErrorView.as_view()),
