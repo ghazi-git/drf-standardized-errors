@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - Add package metadata
 - add a GitHub workflow to create a GitHub release when a new tag is pushed
 - add a GitHub workflow to run tests on every push and pull request
+- add test coverage
 
 ## [0.9.0] - 2022-05-07
 ### Added
