@@ -143,3 +143,17 @@ def test_django_http404_conversion(http404_error, exception_context):
     assert len(response.data["errors"]) == 1
     error = response.data["errors"][0]
     assert error["code"] == "not_found"
+
+
+def test_auth_header_is_set(api_client):
+    response = api_client.get("/auth-error/")
+    assert response.status_code == 401
+    auth_header = response.headers.get("WWW-Authenticate")
+    assert auth_header == 'Basic realm="api"'
+
+
+def test_retry_after_header_is_set(api_client):
+    response = api_client.get("/rate-limit-error/")
+    assert response.status_code == 429
+    retry_after_header = response.headers.get("Retry-After")
+    assert retry_after_header == "600"
