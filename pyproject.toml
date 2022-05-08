@@ -33,7 +33,7 @@ Homepage = "https://github.com/ghazi-git/drf-standardized-errors"
 Documentation = "https://drf-standardized-errors.readthedocs.io/en/latest/"
 Code = "https://github.com/ghazi-git/drf-standardized-errors"
 Issues = "https://github.com/ghazi-git/drf-standardized-errors/issues"
-Changelog = "https://github.com/ghazi-git/drf-standardized-errors/blob/main/docs/changelog.md"
+Changelog = "https://github.com/ghazi-git/drf-standardized-errors/releases"
 
 [tool.flit.module]
 name = "drf_standardized_errors"

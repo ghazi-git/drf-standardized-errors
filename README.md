@@ -74,7 +74,7 @@ DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 ## Links
 
 - Documentation: https://drf-standardized-errors.readthedocs.io/en/latest/
-- Changelog: https://github.com/ghazi-git/drf-standardized-errors/blob/main/docs/changelog.md
+- Changelog: https://github.com/ghazi-git/drf-standardized-errors/releases
 - Code & issues: https://github.com/ghazi-git/drf-standardized-errors
 - PyPI: https://pypi.org/project/drf-standardized-errors/
 
