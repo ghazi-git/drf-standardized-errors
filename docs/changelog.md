@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [UNRELEASED]
 ### Fixed
 - add write permission to create release action, so it can push release notes to GitHub
+- fix license badge link so it works on PyPI
 
 ## [0.10.0] - 2022-05-08
 ### Added
