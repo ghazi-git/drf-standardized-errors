@@ -9,8 +9,7 @@ Standardize your [DRF](https://www.django-rest-framework.org/) API error respons
 [![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)](https://github.com/ghazi-git/drf-standardized-errors/blob/main/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-By default, the API error responses (4xx and 5xx) will look like:
-
+By default, the package will convert all API error responses (4xx and 5xx) to a standardized format:
 ```json
 {
   "type": "validation_error",
@@ -19,6 +18,35 @@ By default, the API error responses (4xx and 5xx) will look like:
       "code": "required",
       "detail": "This field is required.",
       "attr": "name"
+    },
+    {
+      "code": "max_length",
+      "detail": "Ensure this value has at most 100 characters.",
+      "attr": "title"
+    }
+  ]
+}
+```
+```json
+{
+  "type": "client_error",
+  "errors": [
+    {
+      "code": "authentication_failed",
+      "detail": "Incorrect authentication credentials.",
+      "attr": null
+    }
+  ]
+}
+```
+```json
+{
+  "type": "server_error",
+  "errors": [
+    {
+      "code": "error",
+      "detail": "A server error occurred.",
+      "attr": null
     }
   ]
 }
