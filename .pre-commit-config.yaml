@@ -27,7 +27,7 @@ repos:
         args: [ --max-line-length, '120' , --ignore, 'E,W']
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.0
+    rev: v2.32.1
     hooks:
       - id: pyupgrade
         args: [ --py3-plus, --py36-plus, --py38-plus ]
