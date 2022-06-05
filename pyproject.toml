@@ -55,6 +55,10 @@ release = [
     "keyring",
     "tbump",
 ]
+openapi = [
+    "drf-spectacular",
+    "inflection",
+]
 
 [tool.tbump]
 
