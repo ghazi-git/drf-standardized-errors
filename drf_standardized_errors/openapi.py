@@ -1,14 +1,13 @@
-from typing import List
+from typing import List, Optional, Type
 
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
-from drf_spectacular.utils import OpenApiExample, PolymorphicProxySerializer
+from drf_spectacular.utils import PolymorphicProxySerializer
 from inflection import camelize
-from rest_framework import exceptions
+from rest_framework import serializers
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.pagination import CursorPagination, PageNumberPagination
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny
-from rest_framework.status import is_client_error
 from rest_framework.versioning import (
     AcceptHeaderVersioning,
     HostNameVersioning,
@@ -27,7 +26,15 @@ from .openapi_serializers import (
     ErrorResponse429Serializer,
     ErrorResponse500Serializer,
     ParseErrorResponseSerializer,
-    ValidationErrorResponseSerializer,
+)
+from .openapi_utils import (
+    get_django_filter_backends,
+    get_error_examples,
+    get_filter_forms,
+    get_flat_serializer_fields,
+    get_form_fields_with_error_codes,
+    get_serializer_fields_with_error_codes,
+    get_validation_error_serializer,
 )
 from .settings import package_settings
 
@@ -218,7 +225,8 @@ class AutoSchema(BaseAutoSchema):
 
         http400_serializers = []
         if self._should_add_validation_error_response():
-            http400_serializers.append(ValidationErrorResponseSerializer)
+            serializer = self._get_serializer_for_validation_error_response()
+            http400_serializers.append(serializer)
         if self._should_add_parse_error_response():
             http400_serializers.append(ParseErrorResponseSerializer)
 
@@ -228,55 +236,26 @@ class AutoSchema(BaseAutoSchema):
             resource_type_field_name="type",
         )
 
+    def _get_serializer_for_validation_error_response(
+        self,
+    ) -> Optional[Type[serializers.Serializer]]:
+        if self.method in ("PUT", "PATCH", "POST"):
+            serializer = self.get_request_serializer()
+            fields = get_flat_serializer_fields(serializer)
+            fields_with_error_codes = get_serializer_fields_with_error_codes(fields)
+        else:
+            filter_backends = get_django_filter_backends(self.get_filter_backends())
+            filter_forms = get_filter_forms(self.view, filter_backends)
+            fields_with_error_codes = []
+            for form in filter_forms:
+                fields = get_form_fields_with_error_codes(form)
+                fields_with_error_codes.extend(fields)
+
+        if not fields_with_error_codes:
+            return
+
+        operation_id = self.get_operation_id()
+        return get_validation_error_serializer(operation_id, fields_with_error_codes)
+
     def get_examples(self):
         return get_error_examples()
-
-
-def get_django_filter_backends(backends):
-    """determine django filter backends that raise validation errors"""
-    try:
-        from django_filters.rest_framework import DjangoFilterBackend
-    except ImportError:
-        return []
-
-    filter_backends = [filter_backend() for filter_backend in backends]
-    return [
-        backend
-        for backend in filter_backends
-        if isinstance(backend, DjangoFilterBackend) and backend.raise_exception
-    ]
-
-
-def get_error_examples():
-    """
-    error examples for media type "application/json". The main reason for
-    adding them is that they will show `"attr": null` instead of the
-    auto-generated `"attr": "string"`
-    """
-    errors = [
-        exceptions.AuthenticationFailed(),
-        exceptions.NotAuthenticated(),
-        exceptions.PermissionDenied(),
-        exceptions.NotFound(),
-        exceptions.NotAcceptable(),
-        exceptions.UnsupportedMediaType("application/json"),
-        exceptions.Throttled(),
-        exceptions.APIException(),
-    ]
-    return [get_example_from_exception(error) for error in errors]
-
-
-def get_example_from_exception(exc: exceptions.APIException):
-    if is_client_error(exc.status_code):
-        type_ = "client_error"
-    else:
-        type_ = "server_error"
-    return OpenApiExample(
-        exc.__class__.__name__,
-        value={
-            "type": type_,
-            "errors": [{"code": exc.get_codes(), "detail": exc.detail, "attr": None}],
-        },
-        response_only=True,
-        status_codes=[str(exc.status_code)],
-    )
