@@ -54,6 +54,11 @@ DEFAULTS: Dict = {
     # this setting is used as a common name to be used in the API schema. So, the
     # corresponding "attr" value for the previous example will be "extra_data.KEY"
     "DICT_KEY_IN_API_SCHEMA": "KEY",
+    # should be unique to error components since it is used to identify error
+    # components generated dynamically to exclude them from being processed by
+    # the postprocessing hook. This avoids raising warnings for "code" and "attr"
+    # which can have the same choices across multiple serializers.
+    "ERROR_COMPONENT_NAME_SUFFIX": "ErrorComponent",
 }
 
 IMPORT_STRINGS = ("EXCEPTION_FORMATTER_CLASS", "EXCEPTION_HANDLER_CLASS")

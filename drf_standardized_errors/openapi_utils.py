@@ -418,8 +418,12 @@ def get_error_serializer(
 ) -> Type[serializers.Serializer]:
     attr_choices = [(attr, attr)]
     error_code_choices = sorted(zip(error_codes, error_codes))
+
+    camelcase_operation_id = camelize(operation_id)
     attr_with_underscores = attr.replace(package_settings.NESTED_FIELD_SEPARATOR, "_")
-    component_name = f"{camelize(operation_id)}{camelize(attr_with_underscores)}Error"
+    camelcase_attr = camelize(attr_with_underscores)
+    suffix = package_settings.ERROR_COMPONENT_NAME_SUFFIX
+    component_name = f"{camelcase_operation_id}{camelcase_attr}{suffix}"
 
     class ErrorSerializer(serializers.Serializer):
         attr = serializers.ChoiceField(choices=attr_choices)
