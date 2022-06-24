@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+
+## [0.11.0] - 2022-06-24
 ### Changed (Backward-incompatible)
 - Removed all imports from `drf_standardized_errors.__init__.py`. This avoids facing the `AppRegistryNotReady` error
 in certain situations (fixes #7). This change **only affects where functions/classes are imported from**, there are
