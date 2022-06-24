@@ -17,13 +17,13 @@ Set the exception handler for all API views
 ```python
 REST_FRAMEWORK = {
     # other settings
-    "EXCEPTION_HANDLER": "drf_standardized_errors.exception_handler"
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
 ```
 
 or on a view basis (especially if you're introducing this to a versioned API)
 ```python
-from drf_standardized_errors import exception_handler
+from drf_standardized_errors.handler import exception_handler
 from rest_framework.views import APIView
 
 class MyAPIView(APIView):

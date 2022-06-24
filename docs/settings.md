@@ -6,7 +6,7 @@ DRF_STANDARDIZED_ERRORS = {
     # class responsible for handling the exceptions. Can be subclassed to change
     # which exceptions are handled by default, to update which exceptions are
     # reported to error monitoring tools (like Sentry), ...
-    "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.formatter.ExceptionHandler",
+    "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.handler.ExceptionHandler",
     # class responsible for generating error response output. Can be subclassed
     # to change the format of the error response.
     "EXCEPTION_FORMATTER_CLASS": "drf_standardized_errors.formatter.ExceptionFormatter",

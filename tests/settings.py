@@ -18,7 +18,7 @@ PASSWORD_HASHERS = ("django.contrib.auth.hashers.MD5PasswordHasher",)
 ROOT_URLCONF = "tests.urls"
 
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "drf_standardized_errors.exception_handler",
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler",
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": [],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
