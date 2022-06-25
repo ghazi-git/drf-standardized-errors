@@ -28,6 +28,7 @@ from .openapi_serializers import (
     ParseErrorResponseSerializer,
 )
 from .openapi_utils import (
+    InputDataField,
     get_django_filter_backends,
     get_error_examples,
     get_filter_forms,
@@ -239,10 +240,18 @@ class AutoSchema(BaseAutoSchema):
     def _get_serializer_for_validation_error_response(
         self,
     ) -> Optional[Type[serializers.Serializer]]:
+        fields_with_error_codes = self._determine_fields_with_error_codes()
+        if not fields_with_error_codes:
+            return
+
+        operation_id = self.get_operation_id()
+        return get_validation_error_serializer(operation_id, fields_with_error_codes)
+
+    def _determine_fields_with_error_codes(self) -> "List[InputDataField]":
         if self.method in ("PUT", "PATCH", "POST"):
             serializer = self.get_request_serializer()
             fields = get_flat_serializer_fields(serializer)
-            fields_with_error_codes = get_serializer_fields_with_error_codes(fields)
+            return get_serializer_fields_with_error_codes(fields)
         else:
             filter_backends = get_django_filter_backends(self.get_filter_backends())
             filter_forms = get_filter_forms(self.view, filter_backends)
@@ -250,12 +259,7 @@ class AutoSchema(BaseAutoSchema):
             for form in filter_forms:
                 fields = get_form_fields_with_error_codes(form)
                 fields_with_error_codes.extend(fields)
-
-        if not fields_with_error_codes:
-            return
-
-        operation_id = self.get_operation_id()
-        return get_validation_error_serializer(operation_id, fields_with_error_codes)
+            return fields_with_error_codes
 
     def get_examples(self):
         return get_error_examples()
