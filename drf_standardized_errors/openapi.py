@@ -21,6 +21,7 @@ from .openapi_serializers import (
     ErrorResponse401Serializer,
     ErrorResponse403Serializer,
     ErrorResponse404Serializer,
+    ErrorResponse405Serializer,
     ErrorResponse406Serializer,
     ErrorResponse415Serializer,
     ErrorResponse429Serializer,
@@ -82,6 +83,8 @@ class AutoSchema(BaseAutoSchema):
             return self._should_add_http403_error_response()
         elif status_code == "404":
             return self._should_add_http404_error_response()
+        elif status_code == "405":
+            return self._should_add_http405_error_response()
         elif status_code == "406":
             return self._should_add_http406_error_response()
         elif status_code == "415":
@@ -165,6 +168,10 @@ class AutoSchema(BaseAutoSchema):
             or has_path_parameters
         )
 
+    def _should_add_http405_error_response(self) -> bool:
+        # API consumers can at all ties use the wrong method against any endpoint
+        return True
+
     def _should_add_http406_error_response(self) -> bool:
         content_negotiator = self.view.get_content_negotiator()
         return (
@@ -211,6 +218,7 @@ class AutoSchema(BaseAutoSchema):
                 "401": ErrorResponse401Serializer,
                 "403": ErrorResponse403Serializer,
                 "404": ErrorResponse404Serializer,
+                "405": ErrorResponse405Serializer,
                 "406": ErrorResponse406Serializer,
                 "415": ErrorResponse415Serializer,
                 "429": ErrorResponse429Serializer,

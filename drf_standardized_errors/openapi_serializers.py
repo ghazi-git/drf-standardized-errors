@@ -31,6 +31,10 @@ class ErrorCode404Enum(models.TextChoices):
     NOT_FOUND = "not_found"
 
 
+class ErrorCode405Enum(models.TextChoices):
+    METHOD_NOT_ALLOWED = "method_not_allowed"
+
+
 class ErrorCode406Enum(models.TextChoices):
     NOT_ACCEPTABLE = "not_acceptable"
 
@@ -100,6 +104,17 @@ class Error404Serializer(serializers.Serializer):
 class ErrorResponse404Serializer(serializers.Serializer):
     type = serializers.ChoiceField(choices=ClientErrorEnum.choices)
     errors = Error404Serializer(many=True)
+
+
+class Error405Serializer(serializers.Serializer):
+    code = serializers.ChoiceField(choices=ErrorCode405Enum.choices)
+    detail = serializers.CharField()
+    attr = serializers.CharField(allow_null=True)
+
+
+class ErrorResponse405Serializer(serializers.Serializer):
+    type = serializers.ChoiceField(choices=ClientErrorEnum.choices)
+    errors = Error405Serializer(many=True)
 
 
 class Error406Serializer(serializers.Serializer):

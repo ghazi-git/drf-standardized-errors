@@ -469,6 +469,7 @@ def get_error_examples():
         exceptions.NotAuthenticated(),
         exceptions.PermissionDenied(),
         exceptions.NotFound(),
+        exceptions.MethodNotAllowed("get"),
         exceptions.NotAcceptable(),
         exceptions.UnsupportedMediaType("application/json"),
         exceptions.Throttled(),
