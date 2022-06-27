@@ -11,7 +11,7 @@ from rest_framework.exceptions import (
     ValidationError,
 )
 
-from drf_standardized_errors import exception_handler
+from drf_standardized_errors.handler import exception_handler
 
 
 @pytest.fixture

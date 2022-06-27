@@ -45,7 +45,7 @@ class ServiceUnavailable(APIException):
 - You need to subclass `drf_standardized_errors.handler.ExceptionHandler` and override `convert_known_exceptions`
 ```
 import requests
-from drf_standardized_errors import ExceptionHandler
+from drf_standardized_errors.handler import ExceptionHandler
 
 class MyExceptionHandler(ExceptionHandler):
     def convert_known_exceptions(self, exc: Exception) -> Exception:
@@ -66,7 +66,7 @@ you want to change `detail` to `message` and `attr` to `field_name`.
 
 You'll need to subclass `ExceptionFormatter` and override `format_error_response`.
 ```python
-from drf_standardized_errors import ExceptionFormatter
+from drf_standardized_errors.formatter import ExceptionFormatter
 from drf_standardized_errors.types import ErrorResponse
 
 class MyExceptionFormatter(ExceptionFormatter):

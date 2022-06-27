@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
 
+## [0.11.0] - 2022-06-24
+### Changed (Backward-incompatible)
+- Removed all imports from `drf_standardized_errors.__init__.py`. This avoids facing the `AppRegistryNotReady` error
+in certain situations (fixes #7). This change **only affects where functions/classes are imported from**, there are
+**no changes to how they work**. To upgrade to this version, you need to:
+  - Update the `"EXCEPTION_HANDLER"` setting in `REST_FRAMEWORK` to `"drf_standardized_errors.handler.exception_handler"`.
+  - If you imported the exception handler directly, make sure the import looks like this
+  `from drf_standardized_errors.handler import exception_handler`.
+  - If you imported the exception handler class, make sure the import looks like this
+  `from drf_standardized_errors.handler import ExceptionHandler`.
+  - If you imported the exception formatter class, make sure the import looks like this
+  `from drf_standardized_errors.formatter import ExceptionFormatter`.
+
 ## [0.10.2] - 2022-05-08
 ### Fixed
 - disable tag creation by the "create GitHub release" action since it is already created by tbump

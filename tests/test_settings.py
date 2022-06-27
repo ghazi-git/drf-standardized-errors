@@ -1,11 +1,8 @@
 from django.db import IntegrityError
 from rest_framework.exceptions import APIException
 
-from drf_standardized_errors import (
-    ExceptionFormatter,
-    ExceptionHandler,
-    exception_handler,
-)
+from drf_standardized_errors.formatter import ExceptionFormatter
+from drf_standardized_errors.handler import ExceptionHandler, exception_handler
 from drf_standardized_errors.types import ErrorResponse
 
 

@@ -87,7 +87,7 @@ Register the exception handler
 ```python
 REST_FRAMEWORK = {
     # other settings
-    "EXCEPTION_HANDLER": "drf_standardized_errors.exception_handler"
+    "EXCEPTION_HANDLER": "drf_standardized_errors.handler.exception_handler"
 }
 ```
 

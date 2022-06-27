@@ -44,7 +44,7 @@ urlpatterns = [
 import pytest
 from rest_framework.test import APIClient
 
-from drf_standardized_errors import ExceptionFormatter
+from drf_standardized_errors.formatter import ExceptionFormatter
 from drf_standardized_errors.types import ErrorResponse
 
 
