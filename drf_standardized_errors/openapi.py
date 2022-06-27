@@ -7,7 +7,7 @@ from rest_framework import serializers
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.pagination import CursorPagination, PageNumberPagination
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.versioning import (
     AcceptHeaderVersioning,
     HostNameVersioning,
@@ -142,7 +142,15 @@ class AutoSchema(BaseAutoSchema):
     def _should_add_http403_error_response(self) -> bool:
         permissions = self.view.get_permissions()
         is_allow_any = len(permissions) == 1 and isinstance(permissions[0], AllowAny)
-        return bool(permissions) and not is_allow_any
+        # if the only permission class is IsAuthenticated and there are auth classes
+        # in the view, then the error raised is a 401 not a 403 (check implementation
+        # of rest_framework.views.APIView.permission_denied)
+        is_authenticated = (
+            len(permissions) == 1
+            and isinstance(permissions[0], IsAuthenticated)
+            and self.view.get_authenticators()
+        )
+        return bool(permissions) and not is_allow_any and not is_authenticated
 
     def _should_add_http404_error_response(self) -> bool:
         paginator = self._get_paginator()
