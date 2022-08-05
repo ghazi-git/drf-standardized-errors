@@ -215,7 +215,7 @@ class AutoSchema(BaseAutoSchema):
     def _get_error_response_serializer(self, status_code: str):
         error_schemas = package_settings.ERROR_SCHEMAS or {}
         error_schemas = {
-            str(status_code): schema for status_code, schema in error_schemas
+            str(status_code): schema for status_code, schema in error_schemas.items()
         }
         if serializer := error_schemas.get(status_code):
             return serializer
