@@ -42,7 +42,7 @@ from .settings import package_settings
 
 
 class AutoSchema(BaseAutoSchema):
-    def _get_response_bodies(self):
+    def _get_response_bodies(self, direction="response"):
         responses = super()._get_response_bodies()
         error_responses = {}
 
