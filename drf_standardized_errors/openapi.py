@@ -157,12 +157,15 @@ class AutoSchema(BaseAutoSchema):
         paginator_can_raise_404 = isinstance(
             paginator, (PageNumberPagination, CursorPagination)
         )
-        versioning_scheme_can_raise_404 = self.view.versioning_class in [
-            URLPathVersioning,
-            NamespaceVersioning,
-            HostNameVersioning,
-            QueryParameterVersioning,
-        ]
+        versioning_scheme_can_raise_404 = self.view.versioning_class and issubclass(
+            self.view.versioning_class,
+            (
+                URLPathVersioning,
+                NamespaceVersioning,
+                HostNameVersioning,
+                QueryParameterVersioning,
+            ),
+        )
         has_path_parameters = bool(
             [
                 parameter
@@ -182,9 +185,9 @@ class AutoSchema(BaseAutoSchema):
 
     def _should_add_http406_error_response(self) -> bool:
         content_negotiator = self.view.get_content_negotiator()
-        return (
-            isinstance(content_negotiator, DefaultContentNegotiation)
-            or self.view.versioning_class == AcceptHeaderVersioning
+        return isinstance(content_negotiator, DefaultContentNegotiation) or (
+            self.view.versioning_class
+            and issubclass(self.view.versioning_class, AcceptHeaderVersioning)
         )
 
     def _should_add_http415_error_response(self) -> bool:
