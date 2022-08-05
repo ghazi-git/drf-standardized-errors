@@ -260,8 +260,6 @@ class AutoSchema(BaseAutoSchema):
         self,
     ) -> Optional[Type[serializers.Serializer]]:
         fields_with_error_codes = self._determine_fields_with_error_codes()
-        if not fields_with_error_codes:
-            return
 
         operation_id = self.get_operation_id()
         return get_validation_error_serializer(operation_id, fields_with_error_codes)
