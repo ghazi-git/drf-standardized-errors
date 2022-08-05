@@ -1,5 +1,6 @@
 from typing import List, Optional, Type
 
+from drf_spectacular.drainage import warn
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
 from drf_spectacular.utils import PolymorphicProxySerializer
 from inflection import camelize
@@ -51,6 +52,15 @@ class AutoSchema(BaseAutoSchema):
             if self._should_add_error_response(responses, status_code):
                 serializer = self._get_error_response_serializer(status_code)
                 if not serializer:
+                    warn(
+                        f"drf-standardized-errors: The status code '{status_code}' "
+                        "is one of the allowed error status codes in the setting "
+                        "'ALLOWED_ERROR_STATUS_CODES'. However, a corresponding "
+                        "error response serializer could not be determined. Make "
+                        "sure to add one to the 'ERROR_SCHEMAS' setting: this "
+                        "setting is a dict where the key is the status code and "
+                        "the value is the serializer."
+                    )
                     continue
                 error_responses[status_code] = self._get_response_for_code(
                     serializer, status_code
