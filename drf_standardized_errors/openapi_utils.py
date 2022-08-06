@@ -56,9 +56,10 @@ def get_flat_serializer_fields(
 
     field = force_instance(field)
     if is_list_serializer(field):
-        prefix = get_prefix(prefix, package_settings.LIST_INDEX_IN_API_SCHEMA)
+        prefix = get_prefix(prefix, field.field_name)
         non_field_errors_name = get_prefix(prefix, drf_settings.NON_FIELD_ERRORS_KEY)
         f = InputDataField(non_field_errors_name, field)
+        prefix = get_prefix(prefix, package_settings.LIST_INDEX_IN_API_SCHEMA)
         return [f] + get_flat_serializer_fields(field.child, prefix)
     elif is_serializer(field):
         prefix = get_prefix(prefix, field.field_name)
