@@ -7,6 +7,7 @@ INSTALLED_APPS = (
     "django.contrib.contenttypes",
     "rest_framework",
     "drf_standardized_errors",
+    "tests",
 )
 
 DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
