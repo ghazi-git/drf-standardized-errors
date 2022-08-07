@@ -13,6 +13,8 @@ from django.core.validators import (
     MinValueValidator,
     ProhibitNullCharactersValidator,
     RegexValidator,
+    validate_image_file_extension,
+    validate_integer,
     validate_ipv4_address,
     validate_ipv6_address,
     validate_ipv46_address,
@@ -387,8 +389,12 @@ def get_error_codes_from_validators(
         validate_ipv4_address in field.validators
         or validate_ipv6_address in field.validators
         or validate_ipv46_address in field.validators
+        or validate_integer in field.validators
     ):
         error_codes.add("invalid")
+
+    if validate_image_file_extension in field.validators:
+        error_codes.add("invalid_extension")
 
     return error_codes
 
