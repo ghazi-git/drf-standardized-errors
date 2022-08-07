@@ -18,9 +18,6 @@ class PackageSettings(APISettings):
             self._user_settings = getattr(settings, "DRF_STANDARDIZED_ERRORS", {})
         return self._user_settings
 
-    def __check_user_settings(self, user_settings):
-        return user_settings
-
 
 DEFAULTS: Dict = {
     "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.handler.ExceptionHandler",
