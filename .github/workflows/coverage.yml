@@ -16,7 +16,7 @@ jobs:
       - name: Generate coverage report
         run: |
           pip install .
-          pip install pytest pytest-django pytest-cov
+          pip install pytest pytest-django pytest-cov drf-spectacular django-filter
           pytest --cov --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v3
