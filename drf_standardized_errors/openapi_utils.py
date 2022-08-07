@@ -136,7 +136,11 @@ def get_serializer_field_error_codes(field: serializers.Field, attr: str) -> Set
         error_codes.add("required")
     if not field.allow_null:
         error_codes.add("null")
-    if hasattr(field, "allow_blank") and not field.allow_blank:
+    if (
+        hasattr(field, "allow_blank")
+        and not field.allow_blank
+        and not isinstance(field, serializers.ChoiceField)
+    ):
         error_codes.add("blank")
     if getattr(field, "max_digits", None) is not None:
         error_codes.add("max_digits")
