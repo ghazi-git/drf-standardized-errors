@@ -66,7 +66,7 @@ def get_flat_serializer_fields(
         non_field_errors_name = get_prefix(prefix, drf_settings.NON_FIELD_ERRORS_KEY)
         f = InputDataField(non_field_errors_name, field)
         return [f] + get_flat_serializer_fields(list(field.fields.values()), prefix)
-    elif isinstance(field, list):
+    elif isinstance(field, (list, tuple)):
         first, *remaining = field
         return get_flat_serializer_fields(first, prefix) + get_flat_serializer_fields(
             remaining, prefix
@@ -310,7 +310,7 @@ def get_form_fields(field: Union[forms.Field, List[forms.Field]]) -> List[forms.
     if not field:
         return []
 
-    if isinstance(field, list):
+    if isinstance(field, (list, tuple)):
         first, *rest = field
         return get_form_fields(first) + get_form_fields(rest)
     elif isinstance(field, (forms.ComboField, forms.MultiValueField)):
