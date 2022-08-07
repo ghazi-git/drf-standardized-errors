@@ -1,6 +1,9 @@
+import pytest
 from django.contrib.auth.models import User
+from django.urls import path
 from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from drf_spectacular.generators import SchemaGenerator
 from rest_framework import serializers
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import GenericAPIView, ListAPIView
@@ -407,3 +410,17 @@ def test_unhandled_status_code(settings, capsys):
     generate_view_schema(route, view)
     stderr = capsys.readouterr().err
     assert "drf-standardized-errors: The status code '499'" in stderr
+
+
+@pytest.fixture
+def patterns():
+    view = ValidationView.as_view()
+    return [path("post/", view), path("processing/", view), path("hook/", view)]
+
+
+def test_no_warnings_by_post_processing_hook(capsys, patterns):
+    generator = SchemaGenerator(patterns=patterns)
+    generator.get_schema(request=None, public=True)
+
+    stderr = capsys.readouterr().err
+    assert not stderr

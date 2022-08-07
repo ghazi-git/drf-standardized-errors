@@ -41,7 +41,7 @@ def postprocess_schema_enums(result, generator, **kwargs):
             for item in schema:
                 yield from iter_prop_containers(item, component_name)
         elif isinstance(schema, dict):
-            # This is the only change made:
+            # This is the only change made (suffix check added to condition on L50):
             # exclude error components from postprocessing. That's because the
             # components are for dynamically created error serializers where
             # "attr" and "code" fields might have the same choices across
