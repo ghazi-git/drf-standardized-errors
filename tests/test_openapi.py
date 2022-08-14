@@ -26,12 +26,12 @@ from drf_standardized_errors.openapi_serializers import ClientErrorEnum
 from .utils import generate_view_schema, get_responses
 
 
-class DummySerialize(serializers.Serializer):
+class DummySerializer(serializers.Serializer):
     test = serializers.CharField()
 
 
 class DummyView(APIView):
-    serializer_class = DummySerialize
+    serializer_class = DummySerializer
 
     def get(self, request, *args, **kwargs):
         return Response(status=204)
