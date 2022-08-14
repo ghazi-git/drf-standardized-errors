@@ -383,7 +383,7 @@ def test_custom_status_code(settings):
     codes = ["400", "401", "403", "404", "405", "406", "415", "429", "500", "418"]
     settings.DRF_STANDARDIZED_ERRORS = {
         "ALLOWED_ERROR_STATUS_CODES": codes,
-        "ERROR_SCHEMAS": {"418": TeaPotSerializer},
+        "ERROR_SCHEMAS": {"418": "tests.test_openapi.TeaPotSerializer"},
     }
 
     route = "custom_status_code/"

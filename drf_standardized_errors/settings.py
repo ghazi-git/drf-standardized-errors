@@ -77,10 +77,9 @@ DEFAULTS: Dict = {
         "500",
     ],
     # A mapping used to override the default serializers used to describe
-    # the error response. The key is the status code and the value is anything
-    # accepted by "drf_spectacular.openapi.AutoSchema._get_response_for_code".
-    # Examples of valid values are: serializers, None (describes an empty
-    # response), drf_spectacular.utils.OpenApiResponse, ...
+    # the error response. The key is the status code and the value is a string
+    # that represents the path to the serializer class that describes the
+    # error response.
     "ERROR_SCHEMAS": None,
     # When there is a validation error in list serializers, the "attr" returned
     # will be sth like "0.email", "1.email", "2.email", ... So, to describe
@@ -100,7 +99,11 @@ DEFAULTS: Dict = {
     "ERROR_COMPONENT_NAME_SUFFIX": "ErrorComponent",
 }
 
-IMPORT_STRINGS = ("EXCEPTION_FORMATTER_CLASS", "EXCEPTION_HANDLER_CLASS")
+IMPORT_STRINGS = (
+    "EXCEPTION_FORMATTER_CLASS",
+    "EXCEPTION_HANDLER_CLASS",
+    "ERROR_SCHEMAS",
+)
 
 package_settings = PackageSettings(DEFAULTS, IMPORT_STRINGS)
 
