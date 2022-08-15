@@ -9,6 +9,8 @@ settings.md
 error_response.md
 customization.md
 gotchas.md
+openapi.md
+openapi_sample_description.md
 contibuting.md
 release.md
 changelog.md
