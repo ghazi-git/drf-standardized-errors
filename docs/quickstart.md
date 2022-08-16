@@ -78,3 +78,8 @@ exception with
 instead of `return Response(data, status=500)`. That way, error response formatting is handled automatically for you.
 But, keep in mind that exceptions that result in 5xx response are reported to error monitoring tools (like Sentry)
 if you're using one.
+
+## Integration with DRF spectacular
+If you plan to use [drf-spectacular](https://github.com/tfranzel/drf-spectacular) to generate an OpenAPI 3 schema,
+install with `pip install drf-standardized-errors[openapi]`. After that, check the doc page for configuring the
+integration.
