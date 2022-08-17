@@ -1,6 +1,7 @@
 import sys
 from typing import Optional
 
+import django
 from django.conf import settings
 from django.core import signals
 from django.core.exceptions import PermissionDenied
@@ -115,11 +116,21 @@ class ExceptionHandler:
             except AttributeError:
                 request = None
             signals.got_request_exception.send(sender=None, request=request)
-            log_response(
-                "%s: %s",
-                exc.detail,
-                getattr(request, "path", ""),
-                response=response,
-                request=request,
-                exc_info=sys.exc_info(),
-            )
+            if django.VERSION < (4, 1):
+                log_response(
+                    "%s: %s",
+                    exc.detail,
+                    getattr(request, "path", ""),
+                    response=response,
+                    request=request,
+                    exc_info=sys.exc_info(),
+                )
+            else:
+                log_response(
+                    "%s: %s",
+                    exc.detail,
+                    getattr(request, "path", ""),
+                    response=response,
+                    request=request,
+                    exception=exc,
+                )
