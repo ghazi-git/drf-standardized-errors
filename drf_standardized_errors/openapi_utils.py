@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from typing import List, Optional, Set, Type, Union
 
+import django
 from django import forms
 from django.core.validators import (
     DecimalValidator,
@@ -372,6 +373,11 @@ def get_error_codes_from_validators(
         EmailValidator,
         FileExtensionValidator,
     ]
+    if django.VERSION >= (4, 1):
+        from django.core.validators import StepValueValidator
+
+        validators.append(StepValueValidator)
+
     for validator in validators:
         if has_validator(field, validator):
             error_codes.add(validator.code)
