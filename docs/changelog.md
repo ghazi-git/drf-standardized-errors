@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [UNRELEASED]
 ### Added
 - add support for automatically generating error responses schema with [drf-spectacular](https://github.com/tfranzel/drf-spectacular).
+- add support for django 4.1
 
 ## [0.11.0] - 2022-06-24
 ### Changed (Backward-incompatible)
