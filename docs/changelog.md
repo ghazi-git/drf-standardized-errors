@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+
+## [0.12.0] - 2022-08-27
 ### Added
 - add support for automatically generating error responses schema with [drf-spectacular](https://github.com/tfranzel/drf-spectacular).
 Check out the [corresponding documentation page](https://drf-standardized-errors.readthedocs.io/en/latest/openapi.html)
