@@ -84,6 +84,32 @@ def test_validation_error_for_unsafe_method():
     assert "400" in responses
 
 
+def test_discriminator_mapping_for_validation_serializer():
+    route = "validate/"
+    view = ValidationView.as_view()
+    schema = generate_view_schema(route, view)
+
+    discriminator = schema["components"]["schemas"]["ValidateCreateError"][
+        "discriminator"
+    ]
+    assert discriminator["propertyName"] == "attr"
+    mapping_fields = set(discriminator["mapping"])
+    assert mapping_fields == {"non_field_errors", "first_name"}
+
+
+def test_discriminator_mapping_for_http400_serializer():
+    route = "validate/"
+    view = ValidationView.as_view(parser_classes=[JSONParser])
+    schema = generate_view_schema(route, view)
+
+    discriminator = schema["components"]["schemas"]["ValidateCreateErrorResponse400"][
+        "discriminator"
+    ]
+    assert discriminator["propertyName"] == "type"
+    mapping_fields = set(discriminator["mapping"])
+    assert mapping_fields == {"validation_error", "client_error"}
+
+
 def test_no_validation_error_for_unsafe_method():
     route = "validate/"
     view = ValidationView.as_view(serializer_class=None)
