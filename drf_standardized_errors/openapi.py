@@ -19,6 +19,7 @@ from rest_framework.versioning import (
 
 from .handler import exception_handler as standardized_errors_handler
 from .openapi_serializers import (
+    ClientErrorEnum,
     ErrorResponse401Serializer,
     ErrorResponse403Serializer,
     ErrorResponse404Serializer,
@@ -28,6 +29,7 @@ from .openapi_serializers import (
     ErrorResponse429Serializer,
     ErrorResponse500Serializer,
     ParseErrorResponseSerializer,
+    ValidationErrorEnum,
 )
 from .openapi_utils import (
     InputDataField,
@@ -253,12 +255,13 @@ class AutoSchema(BaseAutoSchema):
         operation_id = self.get_operation_id()
         component_name = f"{camelize(operation_id)}ErrorResponse400"
 
-        http400_serializers = []
+        http400_serializers = {}
         if self._should_add_validation_error_response():
             serializer = self._get_serializer_for_validation_error_response()
-            http400_serializers.append(serializer)
+            http400_serializers[ValidationErrorEnum.VALIDATION_ERROR.value] = serializer
         if self._should_add_parse_error_response():
-            http400_serializers.append(ParseErrorResponseSerializer)
+            serializer = ParseErrorResponseSerializer
+            http400_serializers[ClientErrorEnum.CLIENT_ERROR.value] = serializer
 
         return PolymorphicProxySerializer(
             component_name=component_name,

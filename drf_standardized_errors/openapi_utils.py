@@ -410,10 +410,10 @@ def get_validation_error_serializer(
 ):
     validation_error_component_name = f"{camelize(operation_id)}ValidationError"
     errors_component_name = f"{camelize(operation_id)}Error"
-    sub_serializers = [
-        get_error_serializer(operation_id, sfield.name, sfield.error_codes)
+    sub_serializers = {
+        sfield.name: get_error_serializer(operation_id, sfield.name, sfield.error_codes)
         for sfield in data_fields
-    ]
+    }
 
     class ValidationErrorSerializer(serializers.Serializer):
         type = serializers.ChoiceField(choices=ValidationErrorEnum.choices)
