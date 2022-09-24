@@ -401,6 +401,31 @@ def test_custom_serializer_field_error_codes(custom_serializer_field):
     assert "even_number" in field.error_codes
 
 
+class DiagnosisValidator:
+    message = "Unknown diagnosis code."
+    code = "unknown_diagnosis"
+
+    def __init__(self, known_diagnosis_codes=("G00", "G01", "G02")):
+        self.known_diagnosis_codes = known_diagnosis_codes
+
+    def __call__(self, diagnosis_code):
+        if diagnosis_code not in self.known_diagnosis_codes:
+            raise serializers.ValidationError(self.message, code=self.code)
+
+
+@pytest.fixture
+def field_with_custom_validator():
+    return InputDataField(
+        name="diagnosis_code",
+        field=serializers.CharField(validators=[DiagnosisValidator()]),
+    )
+
+
+def test_field_with_custom_validator(field_with_custom_validator):
+    (field,) = get_serializer_fields_with_error_codes([field_with_custom_validator])
+    assert "unknown_diagnosis" in field.error_codes
+
+
 def test_django_filter_not_installed(monkeypatch):
     with mock.patch.dict(sys.modules, {"django_filters.rest_framework": None}):
         backends = get_django_filter_backends([DjangoFilterBackend])
