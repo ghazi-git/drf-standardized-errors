@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+### Added
+- When a custom validator class defines a `code` attribute, add it to the list of error codes of raised by
+the corresponding field.
 
 ## [0.12.1] - 2022-09-03
 ### Fixed
