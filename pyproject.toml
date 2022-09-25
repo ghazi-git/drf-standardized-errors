@@ -41,7 +41,7 @@ name = "drf_standardized_errors"
 [project.optional-dependencies]
 dev = ["pre-commit"]
 doc = [
-    "sphinx",
+    "sphinx!=5.2.0.post0",
     "sphinx-autobuild",
     "sphinx-rtd-theme",
     "myst-parser",
