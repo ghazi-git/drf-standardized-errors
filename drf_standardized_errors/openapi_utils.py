@@ -2,18 +2,9 @@ from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from typing import List, Optional, Set, Type, Union
 
-import django
 from django import forms
 from django.core.validators import (
     DecimalValidator,
-    EmailValidator,
-    FileExtensionValidator,
-    MaxLengthValidator,
-    MaxValueValidator,
-    MinLengthValidator,
-    MinValueValidator,
-    ProhibitNullCharactersValidator,
-    RegexValidator,
     validate_image_file_extension,
     validate_integer,
     validate_ipv4_address,
@@ -34,7 +25,6 @@ from rest_framework.settings import api_settings as drf_settings
 from rest_framework.status import is_client_error
 from rest_framework.validators import (
     BaseUniqueForValidator,
-    ProhibitSurrogateCharactersValidator,
     UniqueTogetherValidator,
     UniqueValidator,
 )
@@ -171,8 +161,6 @@ def get_serializer_field_error_codes(field: serializers.Field, attr: str) -> Set
     error_codes.update(get_error_codes_from_validators(field))
     if has_validator(field, UniqueValidator):
         error_codes.add("unique")
-    if has_validator(field, ProhibitSurrogateCharactersValidator):
-        error_codes.add(ProhibitSurrogateCharactersValidator.code)
 
     error_codes_with_specific_conditions = [
         "required",
@@ -363,24 +351,10 @@ def get_error_codes_from_validators(
     field: Union[serializers.Field, forms.Field]
 ) -> Set[str]:
     error_codes = set()
-    validators = [
-        MinLengthValidator,
-        MaxLengthValidator,
-        ProhibitNullCharactersValidator,
-        MaxValueValidator,
-        MinValueValidator,
-        RegexValidator,
-        EmailValidator,
-        FileExtensionValidator,
-    ]
-    if django.VERSION >= (4, 1):
-        from django.core.validators import StepValueValidator
 
-        validators.append(StepValueValidator)
-
-    for validator in validators:
-        if has_validator(field, validator):
-            error_codes.add(validator.code)
+    for validator in field.validators:
+        if code := getattr(validator, "code", None):
+            error_codes.add(code)
 
     if validators := [v for v in field.validators if isinstance(v, DecimalValidator)]:
         validator = validators[0]
