@@ -1,3 +1,4 @@
+import inspect
 from typing import List, Optional, Type
 
 from drf_spectacular.drainage import warn
@@ -131,8 +132,13 @@ class AutoSchema(BaseAutoSchema):
          to override to accomplish that (maybe sth like
          isinstance(self.view, SomeViewSet) and checking self.method)
         """
-        has_request_body = self.method in ("PUT", "PATCH", "POST") and bool(
-            self.get_request_serializer()
+        request_serializer = self.get_request_serializer()
+        has_request_body = self.method in ("PUT", "PATCH", "POST") and (
+            isinstance(request_serializer, serializers.Field)
+            or (
+                inspect.isclass(request_serializer)
+                and issubclass(request_serializer, serializers.Field)
+            )
         )
 
         filter_backends = get_django_filter_backends(self.get_filter_backends())

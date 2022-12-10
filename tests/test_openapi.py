@@ -4,6 +4,8 @@ from django.urls import path
 from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from drf_spectacular.generators import SchemaGenerator
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import GenericAPIView, ListAPIView
@@ -116,6 +118,27 @@ def test_no_validation_error_for_unsafe_method():
     schema = generate_view_schema(route, view)
     responses = get_responses(schema, route, "post")
     assert "400" not in responses
+
+
+class OpenAPITypesView(GenericAPIView):
+    # ensure that 400 is not added due to the parser classes by using a parser
+    # that does not raise a ParseError which results in adding a 400 error response
+    parser_classes = [CustomParser]
+
+    @extend_schema(request=OpenApiTypes.OBJECT, responses={204: None})
+    def post(self, request, *args, **kwargs):
+        return Response(status=204)
+
+
+def test_no_error_raised_when_request_serializer_is_set_as_openapi_type():
+    route = "validate/"
+    view = OpenAPITypesView.as_view()
+    try:
+        generate_view_schema(route, view)
+    except Exception:
+        pytest.fail(
+            "Schema generation failed when using `@extend_schema(request.OpenApiTypes.OBJECT)`"
+        )
 
 
 class CustomFilterSet(FilterSet):

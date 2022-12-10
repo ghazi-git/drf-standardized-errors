@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+### Fixed
+- account for specifying the request serializer as a basic type using `@extend_schema(request=OpenApiTypes.STR)`
+when determining error codes for validation errors.
 
 ## [0.12.3] - 2022-11-13
 ### Added
