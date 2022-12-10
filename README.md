@@ -100,8 +100,8 @@ DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
 
 ## Integration with DRF spectacular
 If you plan to use [drf-spectacular](https://github.com/tfranzel/drf-spectacular) to generate an OpenAPI 3 schema,
-install with `pip install drf-standardized-errors[openapi]`. After that, check the doc page for configuring the
-integration.
+install with `pip install drf-standardized-errors[openapi]`. After that, check the [doc page](https://drf-standardized-errors.readthedocs.io/en/latest/openapi.html)
+for configuring the integration.
 
 ## Links
 
