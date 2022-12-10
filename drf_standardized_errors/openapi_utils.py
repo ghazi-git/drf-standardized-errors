@@ -1,3 +1,4 @@
+from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
 from typing import List, Optional, Set, Type, Union
@@ -54,6 +55,11 @@ def get_flat_serializer_fields(
         f = InputDataField(non_field_errors_name, field)
         prefix = get_prefix(prefix, package_settings.LIST_INDEX_IN_API_SCHEMA)
         return [f] + get_flat_serializer_fields(field.child, prefix)
+    elif isinstance(field, PolymorphicProxySerializer):
+        if isinstance(field.serializers, dict):
+            return get_flat_serializer_fields(list(field.serializers.values()), prefix)
+        else:
+            return get_flat_serializer_fields(field.serializers, prefix)
     elif is_serializer(field):
         prefix = get_prefix(prefix, field.field_name)
         non_field_errors_name = get_prefix(prefix, drf_settings.NON_FIELD_ERRORS_KEY)
@@ -384,9 +390,16 @@ def get_validation_error_serializer(
 ):
     validation_error_component_name = f"{camelize(operation_id)}ValidationError"
     errors_component_name = f"{camelize(operation_id)}Error"
+
+    # When there are multiple fields with the same name in the list of data_fields,
+    # their error codes are combined. This can happen when using a PolymorphicProxySerializer
+    error_codes_by_field = defaultdict(set)
+    for field in data_fields:
+        error_codes_by_field[field.name].update(field.error_codes)
+
     sub_serializers = {
-        sfield.name: get_error_serializer(operation_id, sfield.name, sfield.error_codes)
-        for sfield in data_fields
+        field_name: get_error_serializer(operation_id, field_name, error_codes)
+        for field_name, error_codes in error_codes_by_field.items()
     }
 
     class ValidationErrorSerializer(serializers.Serializer):

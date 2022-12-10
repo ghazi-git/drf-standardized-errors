@@ -5,7 +5,7 @@ from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from drf_spectacular.generators import SchemaGenerator
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
 from rest_framework import serializers
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import GenericAPIView, ListAPIView
@@ -139,6 +139,81 @@ def test_no_error_raised_when_request_serializer_is_set_as_openapi_type():
         pytest.fail(
             "Schema generation failed when using `@extend_schema(request.OpenApiTypes.OBJECT)`"
         )
+
+
+class Object1Serializer(serializers.Serializer):
+    type = serializers.CharField()
+    field1 = serializers.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.error_messages.update(object1_code="first error")
+
+
+class Object2Serializer(serializers.Serializer):
+    type = serializers.CharField()
+    field2 = serializers.DateField()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.error_messages.update(object2_code="second error")
+
+
+class PolymorphicView(GenericAPIView):
+    # ensure that 400 is not added due to the parser classes by using a parser
+    # that does not raise a ParseError which results in adding a 400 error response
+    parser_classes = [CustomParser]
+
+    @extend_schema(
+        request=PolymorphicProxySerializer(
+            component_name="Object",
+            serializers={"object1": Object1Serializer, "object2": Object2Serializer},
+            resource_type_field_name="type",
+        ),
+        responses={204: None},
+    )
+    def post(self, request, *args, **kwargs):
+        return Response(status=204)
+
+    @extend_schema(
+        request=PolymorphicProxySerializer(
+            component_name="AnotherObject",
+            serializers=[Object1Serializer, Object2Serializer],
+            resource_type_field_name="type",
+        ),
+        responses={204: None},
+    )
+    def patch(self, request, *args, **kwargs):
+        return Response(status=204)
+
+
+def test_error_codes_for_polymorphic_serializer():
+    """
+    For polymorphic serializers, the fields from the actual serializers are combined.
+    Also, when the same field exists in multiple serializers in a polymorphic serializer,
+    their error codes should be combined.
+
+    This test checks that fields from both serializers are present. It also checks that
+    the error codes of non_field_errors from both serializers are combined.
+    """
+    route = "validate/"
+    view = PolymorphicView.as_view()
+    schema = generate_view_schema(route, view)
+
+    mapping = schema["components"]["schemas"]["ValidateCreateError"]["discriminator"][
+        "mapping"
+    ]
+    assert set(mapping) == {"non_field_errors", "type", "field1", "field2"}
+
+    create_error_codes = schema["components"]["schemas"][
+        "ValidateCreateNonFieldErrorsErrorComponent"
+    ]["properties"]["code"]["enum"]
+    assert set(create_error_codes) == {"invalid", "object1_code", "object2_code"}
+
+    patch_error_codes = schema["components"]["schemas"][
+        "ValidatePartialUpdateNonFieldErrorsErrorComponent"
+    ]["properties"]["code"]["enum"]
+    assert set(patch_error_codes) == {"invalid", "object1_code", "object2_code"}
 
 
 class CustomFilterSet(FilterSet):
