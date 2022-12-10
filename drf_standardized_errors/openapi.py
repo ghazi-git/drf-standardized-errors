@@ -126,11 +126,6 @@ class AutoSchema(BaseAutoSchema):
         """
         add a validation error response when unsafe methods have a request body
         or when a list view implements filtering with django-filters.
-        todo add a way to disable adding the 400 validation response on an
-         operation-basis. This is because "serializer.is_valid" has the option
-         of not raising an exception. At the very least, add docs to demo what
-         to override to accomplish that (maybe sth like
-         isinstance(self.view, SomeViewSet) and checking self.method)
         """
         request_serializer = self.get_request_serializer()
         has_request_body = self.method in ("PUT", "PATCH", "POST") and (
