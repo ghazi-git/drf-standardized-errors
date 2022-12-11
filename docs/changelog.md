@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+
+## [0.12.4] - 2022-12-11
 ### Fixed
 - account for specifying the request serializer as a basic type (like `OpenApiTypes.STR`) or as a
 `PolymorphicProxySerializer` using `@extend_schema(request=...)` when determining error codes for validation errors.
