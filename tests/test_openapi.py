@@ -5,7 +5,13 @@ from django_filters import CharFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from drf_spectacular.generators import SchemaGenerator
 from drf_spectacular.types import OpenApiTypes
-from drf_spectacular.utils import PolymorphicProxySerializer, extend_schema
+from drf_spectacular.utils import (
+    OpenApiCallback,
+    OpenApiResponse,
+    PolymorphicProxySerializer,
+    extend_schema,
+    inline_serializer,
+)
 from rest_framework import serializers
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import GenericAPIView, ListAPIView
@@ -548,3 +554,45 @@ def test_no_warnings_by_post_processing_hook(capsys, patterns):
 
     stderr = capsys.readouterr().err
     assert not stderr
+
+
+class CallbackSerializer(serializers.Serializer):
+    callbackUrl = serializers.URLField()
+
+
+class CallbackView(APIView):
+    """based on the example in https://swagger.io/docs/specification/callbacks/"""
+
+    serializer_class = CallbackSerializer
+
+    @extend_schema(
+        responses={201: None},
+        callbacks=[
+            OpenApiCallback(
+                name="myEvent",
+                path="{$request.body#/callbackUrl}",
+                decorator=extend_schema(
+                    request=inline_serializer(
+                        "EventSerializer", fields={"message": serializers.CharField()}
+                    ),
+                    responses={
+                        200: OpenApiResponse(
+                            description="Your server returns this code if it accepts the callback"
+                        )
+                    },
+                ),
+            )
+        ],
+    )
+    def post(self, request, *args, **kwargs):
+        return Response(status=201)
+
+
+def test_callbacks_response_does_not_include_error_responses(settings):
+    route = "subscribe/"
+    view = CallbackView.as_view()
+    schema = generate_view_schema(route, view)
+    event = schema["paths"][f"/{route}"]["post"]["callbacks"]["myEvent"]
+    callback_responses = event["{$request.body#/callbackUrl}"]["post"]["responses"]
+    assert len(callback_responses) == 1
+    assert "200" in callback_responses
