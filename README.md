@@ -3,7 +3,7 @@
 Standardize your [DRF](https://www.django-rest-framework.org/) API error responses.
 
 [![Read the Docs](https://img.shields.io/readthedocs/drf-standardized-errors)](https://drf-standardized-errors.readthedocs.io/en/latest/)
-[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ghazi-git/drf-standardized-errors/Tests?label=Tests&logo=GitHub)](https://github.com/ghazi-git/drf-standardized-errors/actions/workflows/tests.yml)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ghazi-git/drf-standardized-errors/tests.yml?branch=main&label=Tests&logo=GitHub)](https://github.com/ghazi-git/drf-standardized-errors/actions/workflows/tests.yml)
 [![codecov](https://codecov.io/gh/ghazi-git/drf-standardized-errors/branch/main/graph/badge.svg?token=JXTTT1KVBR)](https://codecov.io/gh/ghazi-git/drf-standardized-errors)
 [![PyPI](https://img.shields.io/pypi/v/drf-standardized-errors)](https://pypi.org/project/drf-standardized-errors/)
 [![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)](https://github.com/ghazi-git/drf-standardized-errors/blob/main/LICENSE)
