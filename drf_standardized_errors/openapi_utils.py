@@ -285,7 +285,9 @@ def get_filter_forms(view: APIView, filter_backends: list) -> List[forms.Form]:
         model = get_view_model(view)
         if not model:
             continue
-        filterset = backend.get_filterset(view.request, model.objects.none(), view)
+        filterset = backend.get_filterset(
+            view.request, model._default_manager.none(), view
+        )
         if filterset:
             filter_forms.append(filterset.form)
     return filter_forms

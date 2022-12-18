@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+### Fixed
+- use `model._default_manager` instead of `model.objects`.
 
 ## [0.12.4] - 2022-12-11
 ### Fixed
