@@ -158,6 +158,42 @@ avoid abuse, or as part of the business model, then `429` is better removed and 
 description.
 
 
+#### Hide parse error responses
+
+The 400 status code covers both validation errors and parse errors. But, since parse errors usually appear for
+every operation, you might want to hide them while still showing validation errors. Doing that requires overriding
+the default behavior of the error responses generation in the `AutoSchema` class:
+```python
+from drf_standardized_errors.handler import exception_handler as standardized_errors_handler
+from drf_standardized_errors.openapi import AutoSchema
+
+class CustomAutoSchema(AutoSchema):
+    def _should_add_error_response(self, responses: dict, status_code: str) -> bool:
+        if (
+            status_code == "400"
+            and status_code not in responses
+            and self.view.get_exception_handler() is standardized_errors_handler
+        ):
+            # no need to account for parse errors when deciding if we should add
+            # the 400 error response
+            return self._should_add_validation_error_response()
+        else:
+            return super()._should_add_error_response(responses, status_code)
+
+    def _get_http400_serializer(self):
+        # removed all logic related to having parse errors
+        return self._get_serializer_for_validation_error_response()
+```
+
+After that, update the `DEFAULT_SCHEMA_CLASS` setting
+```python
+REST_FRAMEWORK = {
+    # other settings
+    "DEFAULT_SCHEMA_CLASS": "path.to.CustomAutoSchema"
+}
+```
+
+
 ### Already using a custom `AutoSchema` class
 If you're already overriding the `AutoSchema` class provided by drf-spectacular, be sure to inherit from the
 AutoSchema class provided by this package instead. Also, if you're overriding `get_examples` and/or
