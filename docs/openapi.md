@@ -236,7 +236,7 @@ REST_FRAMEWORK = {
 
 
 ### Custom error format
-This entry covers the changes required if you change the default error response format. the main idea is that
+This entry covers the changes required if you change the default error response format. The main idea is that
 you need to provide serializers that describe each error status code in `ALLOWED_ERROR_STATUS_CODES`. Also,
 you should provide examples for each status code or make sure that the default examples do not show up.
 
