@@ -1,7 +1,6 @@
-from collections import defaultdict
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
-from typing import List, Optional, Set, Type, Union
+from typing import Dict, List, Optional, Set, Type, Union
 
 from django import forms
 from django.core.validators import (
@@ -388,16 +387,10 @@ def get_error_codes_from_validators(
 
 
 def get_validation_error_serializer(
-    operation_id: str, data_fields: "List[InputDataField]"
+    operation_id: str, error_codes_by_field: Dict[str, Set[str]]
 ):
     validation_error_component_name = f"{camelize(operation_id)}ValidationError"
     errors_component_name = f"{camelize(operation_id)}Error"
-
-    # When there are multiple fields with the same name in the list of data_fields,
-    # their error codes are combined. This can happen when using a PolymorphicProxySerializer
-    error_codes_by_field = defaultdict(set)
-    for field in data_fields:
-        error_codes_by_field[field.name].update(field.error_codes)
 
     sub_serializers = {
         field_name: get_error_serializer(operation_id, field_name, error_codes)
@@ -420,19 +413,23 @@ def get_validation_error_serializer(
 
 
 def get_error_serializer(
-    operation_id: str, attr: str, error_codes: Set[str]
+    operation_id: str, attr: Optional[str], error_codes: Set[str]
 ) -> Type[serializers.Serializer]:
-    attr_choices = [(attr, attr)]
+    attr_kwargs = {"choices": [(attr, attr)]}
+    if not attr:
+        attr_kwargs["allow_null"] = True
     error_code_choices = sorted(zip(error_codes, error_codes))
 
     camelcase_operation_id = camelize(operation_id)
-    attr_with_underscores = attr.replace(package_settings.NESTED_FIELD_SEPARATOR, "_")
+    attr_with_underscores = (attr or "").replace(
+        package_settings.NESTED_FIELD_SEPARATOR, "_"
+    )
     camelcase_attr = camelize(attr_with_underscores)
     suffix = package_settings.ERROR_COMPONENT_NAME_SUFFIX
     component_name = f"{camelcase_operation_id}{camelcase_attr}{suffix}"
 
     class ErrorSerializer(serializers.Serializer):
-        attr = serializers.ChoiceField(choices=attr_choices)
+        attr = serializers.ChoiceField(**attr_kwargs)
         code = serializers.ChoiceField(choices=error_code_choices)
         detail = serializers.CharField()
 
