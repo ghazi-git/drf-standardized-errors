@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+### Added
+- allow adding extra validation errors on an operation-basis using the new `@extend_validation_errors` decorator.
+You can find [more information about that in the documentation](openapi.md#customize-error-codes-on-an-operation-basis).
+
 ### Fixed
 - use `model._default_manager` instead of `model.objects`.
 - Don't generate error responses for OpenAPI callbacks.

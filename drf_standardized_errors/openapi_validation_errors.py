@@ -24,11 +24,11 @@ def extend_validation_errors(
 
     :param error_codes: list of error codes to add.
     :param field_name: name of serializer or form field to which the error codes
-        will be added. It can be set to "non_field_errors" when the error codes
-        correspond to validation inside `Serializer.validate` or "__all__" when
-        they correspond to validation inside `Form.clean`. It can also be left
-        as `None` when the validation is not linked to any serializer or form
-        (for example, raising `serializers.ValidationError` inside the view
+        will be added. It can be set to ``"non_field_errors"`` when the error codes
+        correspond to validation inside ``Serializer.validate`` or ``"__all__"`` when
+        they correspond to validation inside ``Form.clean``. It can also be left
+        as ``None`` when the validation is not linked to any serializer or form
+        (for example, raising ``serializers.ValidationError`` inside the view
         or viewset directly).
     :param actions: can be set when decorating a viewset. Limits the added error
         codes to the specified actions. Defaults to adding the error codes to all

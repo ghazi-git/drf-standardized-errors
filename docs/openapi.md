@@ -424,27 +424,73 @@ def get_example_from_exception(exc: exceptions.APIException):
 
 ### Customize error codes on an operation basis
 Determining error codes on a field-basis assumes the developer will follow the example in the last item in
-[Notes](#notes). However, that won't be the case for one-off validation for a serializer field for example.
+[Notes](#notes). However, there are certain situations where that does not happen:
+- When using serializers provided by third-party packages and the package does not add the error codes to
+the `error_messages` attribute.
+- When using a custom form for a filterset class and that form has a `clean` method that includes validation
+between multiple fields (for example, when having a start/end date or min/max price fields)
+- When raising a `ValidationError` inside a view directly.
+- ...
 
-Currently, there is no easy way to update the error codes on an operation-basis. Still, you can override
-`drf_standardized_errors.openapi.AutoSchema._determine_fields_with_error_codes` and make the changes you want.
+In these cases, we can use the `@extend_validation_errors` decorator to add extra error codes for a field
+to specific actions, methods and/or versions. Here's one example: we have a filterset class with `start_date`
+and `end_date` fields and the filterset class uses a custom form that checks that the `end_date` is greater
+than or equal to the `start_date` in the `Form.clean` method. The `@extend_validation_errors` can be used
+on the viewset to add the specific error code to the correct field in your API schema (in this case,
+`__all__` is set as the field name because django sets it as the field name for errors raised in `Form.clean`).
+
 ```python
-from typing import List
-from drf_standardized_errors.openapi import AutoSchema
-from drf_standardized_errors.openapi_utils import InputDataField
+from rest_framework.viewsets import ModelViewSet
+from django import forms
+from django.contrib.auth import get_user_model
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, DateFilter
+from drf_standardized_errors.openapi_validation_errors import extend_validation_errors
+
+User = get_user_model()
 
 
-class CustomAutoSchema(AutoSchema):
-    def _determine_fields_with_error_codes(self) -> List[InputDataField]:
-        """
-        At this level, you need to check for the operation in question and then identify the field
-        """
-        data_fields: List[InputDataField] = super()._determine_fields_with_error_codes()
-        # At this level, you need to check for the operation in question, identify
-        # the field to which you want to add an error code and make the change.
-        # This can be sth like:
-        # >>> if isinstance(self.view, SomeViewSet) and self.method == "POST":
-        # Then find the field in the list of data_fields and update its `error_codes`
-        # attribute.
-        return data_fields
+class UserForm(forms.Form):
+    start_date = forms.DateField()
+    end_date = forms.DateField()
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+        if start_date and end_date and end_date < start_date:
+            msg = "The end should be greater than or equal to the start date."
+            raise forms.ValidationError(msg, code="invalid_date_range")
+        
+        return cleaned_data
+
+
+class UserFilterSet(FilterSet):
+    start_date = DateFilter(field_name="date_joined", lookup_expr="gte")
+    end_date = DateFilter(field_name="date_joined", lookup_expr="lte")
+    
+    class Meta:
+        model = User
+        fields = ["start_date", "end_date"]
+        form = UserForm
+
+
+@extend_validation_errors(["invalid_date_range"], field_name="__all__", actions=["list"], methods=["get"])
+class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = ...
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = UserFilterSet
+```
+
+Few notes about the decorator:
+- It can be applied to a view class, viewset class or view function decorated with `@api_view`.
+- It can be applied multiple times to the same view.
+- It adds **extra** error codes to the ones already collected by drf-standardized-errors for a specific field.
+- If it is applied to a parent view, the added error codes will automatically be added to the child view.
+- Error codes added on a child view, override ones added in a parent view for a specific field, method, action
+and version.
+
+```{eval-rst}
+.. automodule:: drf_standardized_errors.openapi_validation_errors
+    :members: extend_validation_errors
 ```
