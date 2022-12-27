@@ -1,5 +1,6 @@
 import inspect
-from typing import List, Optional, Type
+from collections import defaultdict
+from typing import Dict, List, Optional, Set, Type
 
 from drf_spectacular.drainage import warn
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
@@ -42,6 +43,7 @@ from .openapi_utils import (
     get_serializer_fields_with_error_codes,
     get_validation_error_serializer,
 )
+from .openapi_validation_errors import get_validation_errors
 from .settings import package_settings
 
 
@@ -147,7 +149,8 @@ class AutoSchema(BaseAutoSchema):
                 for filter_backend in filter_backends
             ]
         )
-        return has_request_body or has_filters
+        has_extra_validation_errors = bool(self._get_extra_validation_errors())
+        return has_request_body or has_filters or has_extra_validation_errors
 
     def _should_add_http401_error_response(self) -> bool:
         # empty dicts are appended to auth methods if AllowAny or
@@ -278,9 +281,12 @@ class AutoSchema(BaseAutoSchema):
         self,
     ) -> Optional[Type[serializers.Serializer]]:
         fields_with_error_codes = self._determine_fields_with_error_codes()
+        error_codes_by_field = self._get_validation_error_codes_by_field(
+            fields_with_error_codes
+        )
 
         operation_id = self.get_operation_id()
-        return get_validation_error_serializer(operation_id, fields_with_error_codes)
+        return get_validation_error_serializer(operation_id, error_codes_by_field)
 
     def _determine_fields_with_error_codes(self) -> "List[InputDataField]":
         if self.method in ("PUT", "PATCH", "POST"):
@@ -295,6 +301,36 @@ class AutoSchema(BaseAutoSchema):
                 fields = get_form_fields_with_error_codes(form)
                 fields_with_error_codes.extend(fields)
             return fields_with_error_codes
+
+    def _get_validation_error_codes_by_field(
+        self, data_fields: "List[InputDataField]"
+    ) -> Dict[str, Set[str]]:
+        # When there are multiple fields with the same name in the list of data_fields,
+        # their error codes are combined. This can happen when using a PolymorphicProxySerializer
+        error_codes_by_field = defaultdict(set)
+        for field in data_fields:
+            error_codes_by_field[field.name].update(field.error_codes)
+
+        # add error codes set by the @extend_validation_errors decorator
+        extra_errors = self._get_extra_validation_errors()
+        for field_name, error_codes in extra_errors.items():
+            error_codes_by_field[field_name].update(error_codes)
+
+        return error_codes_by_field
+
+    def _get_extra_validation_errors(self) -> Dict[str, Set[str]]:
+        extra_codes_by_field = {}
+        validation_errors = get_validation_errors(self.view)
+        for field_name, field_errors in validation_errors.items():
+            # Get the first encountered error when looping in reverse order.
+            # That will return errors defined in child views over ones
+            # defined in the parent class.
+            for err in reversed(field_errors):
+                if err.is_in_scope(self):
+                    extra_codes_by_field[field_name] = err.error_codes
+                    break
+
+        return extra_codes_by_field
 
     def get_examples(self):
         return get_error_examples()

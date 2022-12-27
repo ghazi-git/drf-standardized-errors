@@ -12,6 +12,10 @@
 import os
 import sys
 
+from django.conf import settings
+
+settings.configure()
+
 sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
