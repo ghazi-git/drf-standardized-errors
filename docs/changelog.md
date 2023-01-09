@@ -12,7 +12,8 @@ You can find [more information about that in the documentation](openapi.md#custo
 ### Fixed
 - use `model._default_manager` instead of `model.objects`.
 - Don't generate error responses for OpenAPI callbacks.
-
+- Make `_should_add_http403_error_response` check if permission is `IsAuthenticated` and 
+`AllowAny` via `type` instead of `isinstance`
 ## [0.12.4] - 2022-12-11
 ### Fixed
 - account for specifying the request serializer as a basic type (like `OpenApiTypes.STR`) or as a
