@@ -44,7 +44,7 @@ def get_flat_serializer_fields(
     for composite fields by returning 2 fields: one for the errors linked to
     the parent field and another one for errors linked to the child field.
     """
-    if not field:
+    if not field or getattr(field, "read_only", False):
         return []
 
     field = force_instance(field)
