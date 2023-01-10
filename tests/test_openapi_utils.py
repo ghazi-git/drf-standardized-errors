@@ -38,6 +38,13 @@ class CustomSerializer(serializers.Serializer):
     field4 = NestedSerializer(many=True)
 
 
+class CustomSerializerWithNestedReadOnly(serializers.Serializer):
+    field1 = serializers.CharField()
+    field2 = serializers.ListField(child=serializers.IntegerField())
+    field3 = NestedSerializer(read_only=True)
+    field4 = NestedSerializer(read_only=True, many=True)
+
+
 def test_get_flat_serializer_fields():
     fields = get_flat_serializer_fields(CustomSerializer(many=True))
     expected_fields = {
@@ -55,6 +62,19 @@ def test_get_flat_serializer_fields():
         "INDEX.field4.INDEX.nested_field1",
         "INDEX.field4.INDEX.nested_field1.KEY",
         "INDEX.field4.INDEX.nested_field2",
+    }
+    assert {field.name for field in fields} == expected_fields
+
+
+def test_get_flat_serializer_fields_with_nested_read_only():
+    """Check case when NestedSerializer is read-only with non read-only fields."""
+    fields = get_flat_serializer_fields(CustomSerializerWithNestedReadOnly(many=True))
+    expected_fields = {
+        "non_field_errors",
+        "INDEX.non_field_errors",
+        "INDEX.field1",
+        "INDEX.field2",
+        "INDEX.field2.INDEX",
     }
     assert {field.name for field in fields} == expected_fields
 
