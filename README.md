@@ -111,6 +111,6 @@ for configuring the integration.
 - PyPI: https://pypi.org/project/drf-standardized-errors/
 
 
-## Licence
+## License
 
 This project is [MIT licensed](LICENSE).
