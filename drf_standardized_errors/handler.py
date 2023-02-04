@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.log import log_response
 from rest_framework import exceptions
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import is_server_error
 from rest_framework.views import set_rollback
@@ -112,7 +113,8 @@ class ExceptionHandler:
         """
         if is_server_error(exc.status_code):
             try:
-                request = self.context["request"]._request
+                drf_request: Request = self.context["request"]
+                request = drf_request._request
             except AttributeError:
                 request = None
             signals.got_request_exception.send(sender=None, request=request)

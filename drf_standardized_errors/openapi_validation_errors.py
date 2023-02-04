@@ -179,9 +179,9 @@ def generate_standardized_errors(
     methods: Optional[List[str]],
     versions: Optional[List[str]],
 ) -> "List[StandardizedError]":
-    actions = actions or [None]
-    methods = methods or [None]
-    versions = versions or [None]
+    actions = actions or [None]  # type: ignore
+    methods = methods or [None]  # type: ignore
+    versions = versions or [None]  # type: ignore
 
     return [
         StandardizedError(set(error_codes), field_name, action, method, version)

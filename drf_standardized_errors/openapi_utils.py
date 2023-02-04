@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
-from typing import Dict, List, Optional, Set, Type, Union
+from typing import Any, Dict, List, Optional, Set, Type, Union
 
 from django import forms
 from django.core.validators import (
@@ -35,7 +35,8 @@ from .settings import package_settings
 
 
 def get_flat_serializer_fields(
-    field: Union[serializers.Field, List[serializers.Field]], prefix: str = None
+    field: Union[serializers.Field, List[serializers.Field]],
+    prefix: Optional[str] = None,
 ) -> "List[InputDataField]":
     """
     return a flat list of serializer fields. The fields list will later be used
@@ -415,7 +416,7 @@ def get_validation_error_serializer(
 def get_error_serializer(
     operation_id: str, attr: Optional[str], error_codes: Set[str]
 ) -> Type[serializers.Serializer]:
-    attr_kwargs = {"choices": [(attr, attr)]}
+    attr_kwargs: Dict[str, Any] = {"choices": [(attr, attr)]}
     if not attr:
         attr_kwargs["allow_null"] = True
     error_code_choices = sorted(zip(error_codes, error_codes))
