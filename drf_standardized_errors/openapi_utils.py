@@ -351,7 +351,9 @@ def get_form_field_error_codes(field: forms.Field) -> Set[str]:
     return error_codes.difference(["missing", "incomplete"])
 
 
-def has_validator(field: Union[serializers.Field, forms.Field], validator):
+def has_validator(
+    field: Union[serializers.Field, forms.Field], validator: Type
+) -> bool:
     return any(isinstance(v, validator) for v in field.validators)
 
 
@@ -389,7 +391,7 @@ def get_error_codes_from_validators(
 
 def get_validation_error_serializer(
     operation_id: str, error_codes_by_field: Dict[str, Set[str]]
-):
+) -> Type[serializers.Serializer]:
     validation_error_component_name = f"{camelize(operation_id)}ValidationError"
     errors_component_name = f"{camelize(operation_id)}Error"
 
@@ -482,7 +484,7 @@ def get_error_examples():
     return [get_example_from_exception(error) for error in errors]
 
 
-def get_example_from_exception(exc: exceptions.APIException):
+def get_example_from_exception(exc: exceptions.APIException) -> OpenApiExample:
     if is_client_error(exc.status_code):
         type_ = "client_error"
     else:

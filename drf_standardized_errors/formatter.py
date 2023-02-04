@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from typing import List, Union
+from typing import Any, List, Optional, Union
 
 from rest_framework import exceptions
 from rest_framework.status import is_client_error
@@ -60,12 +60,14 @@ class ExceptionFormatter:
     ) -> ErrorResponse:
         return ErrorResponse(error_type, errors)
 
-    def format_error_response(self, error_response: ErrorResponse):
+    def format_error_response(self, error_response: ErrorResponse) -> Any:
         return asdict(error_response)
 
 
 def flatten_errors(
-    detail: Union[list, dict, exceptions.ErrorDetail], attr=None, index=None
+    detail: Union[list, dict, exceptions.ErrorDetail],
+    attr: Optional[str] = None,
+    index: Optional[int] = None,
 ) -> List[Error]:
     """
     convert this:

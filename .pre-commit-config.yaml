@@ -36,4 +36,4 @@ repos:
     rev: v0.991
     hooks:
       - id: mypy
-        args: [ --ignore-missing-imports, --check-untyped-defs ]
+        args: [ --ignore-missing-imports, --check-untyped-defs, --disallow-incomplete-defs ]

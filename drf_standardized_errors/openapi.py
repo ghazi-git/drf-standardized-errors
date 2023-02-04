@@ -1,6 +1,6 @@
 import inspect
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Type
+from typing import Dict, List, Optional, Set, Type, Union
 
 from drf_spectacular.drainage import warn
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
@@ -232,7 +232,9 @@ class AutoSchema(BaseAutoSchema):
         # bugs are inevitable
         return True
 
-    def _get_error_response_serializer(self, status_code: str):
+    def _get_error_response_serializer(
+        self, status_code: str
+    ) -> Union[Type[serializers.Serializer], serializers.Serializer]:
         error_schemas = package_settings.ERROR_SCHEMAS or {}
         error_schemas = {
             str(status_code): schema for status_code, schema in error_schemas.items()

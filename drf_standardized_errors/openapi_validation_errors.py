@@ -2,7 +2,7 @@ import copy
 import inspect
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set, Type
+from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar, Union
 
 from drf_spectacular.drainage import error, warn
 from drf_spectacular.openapi import AutoSchema
@@ -11,6 +11,8 @@ from rest_framework.viewsets import ViewSetMixin
 
 from .types import SetValidationErrorsKwargs
 
+V = TypeVar("V", bound=Union[Type[APIView], Callable[..., Any]])
+
 
 def extend_validation_errors(
     error_codes: List[str],
@@ -18,7 +20,7 @@ def extend_validation_errors(
     actions: Optional[List[str]] = None,
     methods: Optional[List[str]] = None,
     versions: Optional[List[str]] = None,
-):
+) -> Callable[[V], V]:
     """
     A view/viewset decorator for adding extra error codes to validation errors.
     This decorator does not override error codes already collected by
@@ -152,7 +154,7 @@ def set_validation_errors(
     actions: Optional[List[str]],
     methods: Optional[List[str]],
     versions: Optional[List[str]],
-):
+) -> None:
     if hasattr(view, "_standardized_errors"):
         if "_standardized_errors" not in vars(view):
             # that means it is defined on a parent class, so we first create

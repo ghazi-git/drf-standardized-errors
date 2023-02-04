@@ -100,7 +100,9 @@ class ExceptionHandler:
             headers["Retry-After"] = "%d" % exc.wait
         return headers
 
-    def report_exception(self, exc: exceptions.APIException, response):
+    def report_exception(
+        self, exc: exceptions.APIException, response: Response
+    ) -> None:
         """
         Normally, when an exception is unhandled (non-DRF exception), DRF delegates
         handling it to Django. Django, then, takes care of returning the appropriate
