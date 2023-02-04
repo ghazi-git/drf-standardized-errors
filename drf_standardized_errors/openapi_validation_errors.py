@@ -9,6 +9,8 @@ from drf_spectacular.openapi import AutoSchema
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSetMixin
 
+from .types import SetValidationErrorsKwargs
+
 
 def extend_validation_errors(
     error_codes: List[str],
@@ -66,7 +68,7 @@ def extend_validation_errors(
             )
             return view
 
-        kwargs = {
+        kwargs: SetValidationErrorsKwargs = {
             "error_codes": error_codes,
             "field_name": field_name,
             "actions": actions,
