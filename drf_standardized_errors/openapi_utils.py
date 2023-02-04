@@ -227,8 +227,9 @@ def get_serializer_field_error_codes(field: serializers.Field, attr: str) -> Set
 
 
 def add_unique_together_error_codes(
-    sfields_with_unique_together_validators, sfields_with_error_codes
-):
+    sfields_with_unique_together_validators: "List[InputDataField]",
+    sfields_with_error_codes: "List[InputDataField]",
+) -> None:
     for sfield in sfields_with_unique_together_validators:
         sfield.error_codes.add("unique")
         unique_together_validators = [
@@ -246,8 +247,9 @@ def add_unique_together_error_codes(
 
 
 def add_unique_for_error_codes(
-    sfields_with_unique_for_validators, sfields_with_error_codes
-):
+    sfields_with_unique_for_validators: "List[InputDataField]",
+    sfields_with_error_codes: "List[InputDataField]",
+) -> None:
     for sfield in sfields_with_unique_for_validators:
         unique_for_validators = [
             validator
@@ -262,7 +264,9 @@ def add_unique_for_error_codes(
             add_error_code(sfield.name, v.field, "unique", sfields_with_error_codes)
 
 
-def add_error_code(attr, field_name, error_code, sfields):
+def add_error_code(
+    attr: str, field_name: str, error_code: str, sfields: "List[InputDataField]"
+) -> None:
     """
     To add the error code to the right serializer field, we need to
     determine the full field name taking into account nested serializers.
@@ -449,7 +453,7 @@ class InputDataField:
     error_codes: Set[str] = dataclass_field(default_factory=set)
 
 
-def get_django_filter_backends(backends):
+def get_django_filter_backends(backends: list) -> list:
     """determine django filter backends that raise validation errors"""
     try:
         from django_filters.rest_framework import DjangoFilterBackend
@@ -464,7 +468,7 @@ def get_django_filter_backends(backends):
     ]
 
 
-def get_error_examples():
+def get_error_examples() -> List[OpenApiExample]:
     """
     error examples for media type "application/json". The main reason for
     adding them is that they will show `"attr": null` instead of the

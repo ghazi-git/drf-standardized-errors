@@ -85,7 +85,7 @@ class ExceptionHandler:
         assert issubclass(exception_formatter_class, ExceptionFormatter), msg
         return exception_formatter_class(exc, self.context, self.exc).run()
 
-    def set_rollback(self):
+    def set_rollback(self) -> None:
         set_rollback()
 
     def get_response(self, exc: exceptions.APIException, data: dict) -> Response:

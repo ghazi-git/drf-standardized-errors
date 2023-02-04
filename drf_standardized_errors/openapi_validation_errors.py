@@ -45,7 +45,7 @@ def extend_validation_errors(
     if methods:
         methods = [method.lower() for method in methods]
 
-    def wrapper(view):
+    def wrapper(view):  # type: ignore
         # special case for @api_view. Decorate the WrappedAPIView class
         if callable(view) and hasattr(view, "cls"):
             extend_validation_errors(
@@ -119,7 +119,7 @@ def extend_validation_errors(
     return wrapper
 
 
-def get_action_names(viewset):
+def get_action_names(viewset: Type[ViewSetMixin]) -> List[str]:
     # based on drf_spectacular.drainage.get_view_method_names
     builtin_action_names = ["list"] + list(viewset.schema.method_mapping.values())
     return [
@@ -130,12 +130,12 @@ def get_action_names(viewset):
     ]
 
 
-def is_custom_action(viewset, method_name):
+def is_custom_action(viewset: Type[ViewSetMixin], method_name: str) -> bool:
     # i.e. defined using the @action decorator
     return hasattr(getattr(viewset, method_name), "mapping")
 
 
-def get_allowed_http_methods(view):
+def get_allowed_http_methods(view: Type[APIView]) -> List[str]:
     if issubclass(view, ViewSetMixin):
         return view.http_method_names
     else:

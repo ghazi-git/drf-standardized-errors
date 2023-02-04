@@ -19,7 +19,7 @@ class ExceptionFormatter:
         self.context = context
         self.original_exc = original_exc
 
-    def run(self):
+    def run(self) -> Any:
         """
         Entrypoint for formatting the error response.
 
