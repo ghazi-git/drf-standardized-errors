@@ -37,3 +37,4 @@ repos:
     hooks:
       - id: mypy
         args: [ --ignore-missing-imports, --check-untyped-defs, --disallow-incomplete-defs ]
+        exclude: '^tests'
