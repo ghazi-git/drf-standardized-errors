@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.log import log_response
 from rest_framework import exceptions
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.status import is_server_error
 from rest_framework.views import set_rollback
@@ -84,7 +85,7 @@ class ExceptionHandler:
         assert issubclass(exception_formatter_class, ExceptionFormatter), msg
         return exception_formatter_class(exc, self.context, self.exc).run()
 
-    def set_rollback(self):
+    def set_rollback(self) -> None:
         set_rollback()
 
     def get_response(self, exc: exceptions.APIException, data: dict) -> Response:
@@ -99,7 +100,9 @@ class ExceptionHandler:
             headers["Retry-After"] = "%d" % exc.wait
         return headers
 
-    def report_exception(self, exc: exceptions.APIException, response):
+    def report_exception(
+        self, exc: exceptions.APIException, response: Response
+    ) -> None:
         """
         Normally, when an exception is unhandled (non-DRF exception), DRF delegates
         handling it to Django. Django, then, takes care of returning the appropriate
@@ -112,7 +115,8 @@ class ExceptionHandler:
         """
         if is_server_error(exc.status_code):
             try:
-                request = self.context["request"]._request
+                drf_request: Request = self.context["request"]
+                request = drf_request._request
             except AttributeError:
                 request = None
             signals.got_request_exception.send(sender=None, request=request)

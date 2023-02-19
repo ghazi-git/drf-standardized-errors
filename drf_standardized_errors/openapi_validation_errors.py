@@ -2,12 +2,16 @@ import copy
 import inspect
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set, Type
+from typing import Any, Callable, Dict, List, Optional, Set, Type, TypeVar, Union
 
 from drf_spectacular.drainage import error, warn
 from drf_spectacular.openapi import AutoSchema
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSetMixin
+
+from .types import SetValidationErrorsKwargs
+
+V = TypeVar("V", bound=Union[Type[APIView], Callable[..., Any]])
 
 
 def extend_validation_errors(
@@ -16,7 +20,7 @@ def extend_validation_errors(
     actions: Optional[List[str]] = None,
     methods: Optional[List[str]] = None,
     versions: Optional[List[str]] = None,
-):
+) -> Callable[[V], V]:
     """
     A view/viewset decorator for adding extra error codes to validation errors.
     This decorator does not override error codes already collected by
@@ -41,7 +45,7 @@ def extend_validation_errors(
     if methods:
         methods = [method.lower() for method in methods]
 
-    def wrapper(view):
+    def wrapper(view):  # type: ignore
         # special case for @api_view. Decorate the WrappedAPIView class
         if callable(view) and hasattr(view, "cls"):
             extend_validation_errors(
@@ -66,7 +70,7 @@ def extend_validation_errors(
             )
             return view
 
-        kwargs = {
+        kwargs: SetValidationErrorsKwargs = {
             "error_codes": error_codes,
             "field_name": field_name,
             "actions": actions,
@@ -115,7 +119,7 @@ def extend_validation_errors(
     return wrapper
 
 
-def get_action_names(viewset):
+def get_action_names(viewset: Type[ViewSetMixin]) -> List[str]:
     # based on drf_spectacular.drainage.get_view_method_names
     builtin_action_names = ["list"] + list(viewset.schema.method_mapping.values())
     return [
@@ -126,12 +130,12 @@ def get_action_names(viewset):
     ]
 
 
-def is_custom_action(viewset, method_name):
+def is_custom_action(viewset: Type[ViewSetMixin], method_name: str) -> bool:
     # i.e. defined using the @action decorator
     return hasattr(getattr(viewset, method_name), "mapping")
 
 
-def get_allowed_http_methods(view):
+def get_allowed_http_methods(view: Type[APIView]) -> List[str]:
     if issubclass(view, ViewSetMixin):
         return view.http_method_names
     else:
@@ -150,7 +154,7 @@ def set_validation_errors(
     actions: Optional[List[str]],
     methods: Optional[List[str]],
     versions: Optional[List[str]],
-):
+) -> None:
     if hasattr(view, "_standardized_errors"):
         if "_standardized_errors" not in vars(view):
             # that means it is defined on a parent class, so we first create
@@ -179,9 +183,9 @@ def generate_standardized_errors(
     methods: Optional[List[str]],
     versions: Optional[List[str]],
 ) -> "List[StandardizedError]":
-    actions = actions or [None]
-    methods = methods or [None]
-    versions = versions or [None]
+    actions = actions or [None]  # type: ignore
+    methods = methods or [None]  # type: ignore
+    versions = versions or [None]  # type: ignore
 
     return [
         StandardizedError(set(error_codes), field_name, action, method, version)

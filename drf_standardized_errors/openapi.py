@@ -1,6 +1,6 @@
 import inspect
 from collections import defaultdict
-from typing import Dict, List, Optional, Set, Type
+from typing import Any, Dict, List, Set, Type, Union
 
 from drf_spectacular.drainage import warn
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
@@ -46,9 +46,11 @@ from .openapi_utils import (
 from .openapi_validation_errors import get_validation_errors
 from .settings import package_settings
 
+S = Union[Type[serializers.Serializer], serializers.Serializer]
+
 
 class AutoSchema(BaseAutoSchema):
-    def _get_response_bodies(self, direction="response"):
+    def _get_response_bodies(self, direction: str = "response") -> Dict[str, Any]:
         responses = super()._get_response_bodies(direction=direction)
         if direction == "response":
             error_responses = {}
@@ -232,7 +234,7 @@ class AutoSchema(BaseAutoSchema):
         # bugs are inevitable
         return True
 
-    def _get_error_response_serializer(self, status_code: str):
+    def _get_error_response_serializer(self, status_code: str) -> S:
         error_schemas = package_settings.ERROR_SCHEMAS or {}
         error_schemas = {
             str(status_code): schema for status_code, schema in error_schemas.items()
@@ -257,7 +259,7 @@ class AutoSchema(BaseAutoSchema):
             }
             return error_serializers.get(status_code)
 
-    def _get_http400_serializer(self):
+    def _get_http400_serializer(self) -> S:
         # using the operation id (which is unique) to generate a unique
         # component name
         operation_id = self.get_operation_id()
@@ -266,10 +268,10 @@ class AutoSchema(BaseAutoSchema):
         http400_serializers = {}
         if self._should_add_validation_error_response():
             serializer = self._get_serializer_for_validation_error_response()
-            http400_serializers[ValidationErrorEnum.VALIDATION_ERROR.value] = serializer
+            http400_serializers[ValidationErrorEnum.VALIDATION_ERROR] = serializer
         if self._should_add_parse_error_response():
             serializer = ParseErrorResponseSerializer
-            http400_serializers[ClientErrorEnum.CLIENT_ERROR.value] = serializer
+            http400_serializers[ClientErrorEnum.CLIENT_ERROR] = serializer
 
         return PolymorphicProxySerializer(
             component_name=component_name,
@@ -277,9 +279,7 @@ class AutoSchema(BaseAutoSchema):
             resource_type_field_name="type",
         )
 
-    def _get_serializer_for_validation_error_response(
-        self,
-    ) -> Optional[Type[serializers.Serializer]]:
+    def _get_serializer_for_validation_error_response(self) -> S:
         fields_with_error_codes = self._determine_fields_with_error_codes()
         error_codes_by_field = self._get_validation_error_codes_by_field(
             fields_with_error_codes
@@ -332,5 +332,5 @@ class AutoSchema(BaseAutoSchema):
 
         return extra_codes_by_field
 
-    def get_examples(self):
+    def get_examples(self) -> list:
         return get_error_examples()

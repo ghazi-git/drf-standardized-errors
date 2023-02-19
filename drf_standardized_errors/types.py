@@ -30,3 +30,11 @@ class Error:
 class ErrorResponse:
     type: ErrorType
     errors: List[Error]
+
+
+class SetValidationErrorsKwargs(TypedDict):
+    error_codes: List[str]
+    field_name: Optional[str]
+    actions: Optional[List[str]]
+    methods: Optional[List[str]]
+    versions: Optional[List[str]]

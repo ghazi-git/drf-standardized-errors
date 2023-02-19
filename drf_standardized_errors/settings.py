@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Any, Dict, Optional, Set, Tuple
 
 from django.conf import settings
 from django.core.signals import setting_changed
@@ -15,18 +15,22 @@ class PackageSettings:
 
     setting_name = "DRF_STANDARDIZED_ERRORS"
 
-    def __init__(self, defaults=None, import_strings=None):
+    def __init__(
+        self,
+        defaults: Optional[Dict[str, Any]] = None,
+        import_strings: Optional[Tuple[str, ...]] = None,
+    ):
         self.defaults = defaults or DEFAULTS
         self.import_strings = import_strings or IMPORT_STRINGS
-        self._cached_attrs = set()
+        self._cached_attrs: Set[str] = set()
 
     @property
-    def user_settings(self):
+    def user_settings(self) -> Dict[str, Any]:
         if not hasattr(self, "_user_settings"):
             self._user_settings = getattr(settings, self.setting_name, {})
         return self._user_settings
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> Any:
         if attr not in self.defaults:
             raise AttributeError("Invalid API setting: '%s'" % attr)
 
@@ -52,7 +56,7 @@ class PackageSettings:
         setattr(self, attr, val)
         return val
 
-    def reload(self):
+    def reload(self) -> None:
         for attr in self._cached_attrs:
             delattr(self, attr)
         self._cached_attrs.clear()
@@ -60,7 +64,7 @@ class PackageSettings:
             delattr(self, "_user_settings")
 
 
-DEFAULTS: Dict = {
+DEFAULTS: Dict[str, Any] = {
     "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.handler.ExceptionHandler",
     "EXCEPTION_FORMATTER_CLASS": "drf_standardized_errors.formatter.ExceptionFormatter",
     "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": False,
@@ -92,7 +96,7 @@ package_settings = PackageSettings(DEFAULTS, IMPORT_STRINGS)
 
 
 @receiver(setting_changed)
-def reload_package_settings(*args, **kwargs):
+def reload_package_settings(*args: Any, **kwargs: Any) -> None:
     setting = kwargs["setting"]
     if setting == package_settings.setting_name:
         package_settings.reload()
