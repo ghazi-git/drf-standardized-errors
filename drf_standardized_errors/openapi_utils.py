@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
-from typing import Dict, List, Optional, Set, Type, Union
+from typing import Any, Dict, List, Optional, Set, Type, Union
 
 from django import forms
 from django.core.validators import (
@@ -35,7 +35,8 @@ from .settings import package_settings
 
 
 def get_flat_serializer_fields(
-    field: Union[serializers.Field, List[serializers.Field]], prefix: str = None
+    field: Union[serializers.Field, List[serializers.Field]],
+    prefix: Optional[str] = None,
 ) -> "List[InputDataField]":
     """
     return a flat list of serializer fields. The fields list will later be used
@@ -226,8 +227,9 @@ def get_serializer_field_error_codes(field: serializers.Field, attr: str) -> Set
 
 
 def add_unique_together_error_codes(
-    sfields_with_unique_together_validators, sfields_with_error_codes
-):
+    sfields_with_unique_together_validators: "List[InputDataField]",
+    sfields_with_error_codes: "List[InputDataField]",
+) -> None:
     for sfield in sfields_with_unique_together_validators:
         sfield.error_codes.add("unique")
         unique_together_validators = [
@@ -245,8 +247,9 @@ def add_unique_together_error_codes(
 
 
 def add_unique_for_error_codes(
-    sfields_with_unique_for_validators, sfields_with_error_codes
-):
+    sfields_with_unique_for_validators: "List[InputDataField]",
+    sfields_with_error_codes: "List[InputDataField]",
+) -> None:
     for sfield in sfields_with_unique_for_validators:
         unique_for_validators = [
             validator
@@ -261,7 +264,9 @@ def add_unique_for_error_codes(
             add_error_code(sfield.name, v.field, "unique", sfields_with_error_codes)
 
 
-def add_error_code(attr, field_name, error_code, sfields):
+def add_error_code(
+    attr: str, field_name: str, error_code: str, sfields: "List[InputDataField]"
+) -> None:
     """
     To add the error code to the right serializer field, we need to
     determine the full field name taking into account nested serializers.
@@ -350,7 +355,9 @@ def get_form_field_error_codes(field: forms.Field) -> Set[str]:
     return error_codes.difference(["missing", "incomplete"])
 
 
-def has_validator(field: Union[serializers.Field, forms.Field], validator):
+def has_validator(
+    field: Union[serializers.Field, forms.Field], validator: Type
+) -> bool:
     return any(isinstance(v, validator) for v in field.validators)
 
 
@@ -388,7 +395,7 @@ def get_error_codes_from_validators(
 
 def get_validation_error_serializer(
     operation_id: str, error_codes_by_field: Dict[str, Set[str]]
-):
+) -> Type[serializers.Serializer]:
     validation_error_component_name = f"{camelize(operation_id)}ValidationError"
     errors_component_name = f"{camelize(operation_id)}Error"
 
@@ -415,7 +422,7 @@ def get_validation_error_serializer(
 def get_error_serializer(
     operation_id: str, attr: Optional[str], error_codes: Set[str]
 ) -> Type[serializers.Serializer]:
-    attr_kwargs = {"choices": [(attr, attr)]}
+    attr_kwargs: Dict[str, Any] = {"choices": [(attr, attr)]}
     if not attr:
         attr_kwargs["allow_null"] = True
     error_code_choices = sorted(zip(error_codes, error_codes))
@@ -446,7 +453,7 @@ class InputDataField:
     error_codes: Set[str] = dataclass_field(default_factory=set)
 
 
-def get_django_filter_backends(backends):
+def get_django_filter_backends(backends: list) -> list:
     """determine django filter backends that raise validation errors"""
     try:
         from django_filters.rest_framework import DjangoFilterBackend
@@ -461,7 +468,7 @@ def get_django_filter_backends(backends):
     ]
 
 
-def get_error_examples():
+def get_error_examples() -> List[OpenApiExample]:
     """
     error examples for media type "application/json". The main reason for
     adding them is that they will show `"attr": null` instead of the
@@ -481,7 +488,7 @@ def get_error_examples():
     return [get_example_from_exception(error) for error in errors]
 
 
-def get_example_from_exception(exc: exceptions.APIException):
+def get_example_from_exception(exc: exceptions.APIException) -> OpenApiExample:
     if is_client_error(exc.status_code):
         type_ = "client_error"
     else:

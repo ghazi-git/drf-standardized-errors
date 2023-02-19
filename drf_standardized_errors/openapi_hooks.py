@@ -1,3 +1,5 @@
+# mypy: ignore-errors
+# since it's a copy of drf-spectacular postprocessing hook
 import re
 from collections import defaultdict
 
