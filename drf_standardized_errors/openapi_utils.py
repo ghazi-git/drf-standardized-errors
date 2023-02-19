@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from dataclasses import field as dataclass_field
+from dataclasses import dataclass, field as dataclass_field
 from typing import Any, Dict, List, Optional, Set, Type, Union
 
 from django import forms
