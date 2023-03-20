@@ -596,3 +596,23 @@ def test_callbacks_response_does_not_include_error_responses(settings):
     callback_responses = event["{$request.body#/callbackUrl}"]["post"]["responses"]
     assert len(callback_responses) == 1
     assert "200" in callback_responses
+
+
+class GetView(APIView):
+    @extend_schema(responses={204: None})
+    def get(self, request, *args, **kwargs):
+        return Response(status=204)
+
+
+def test_get_view_does_not_raise_missing_serializer_warning(capsys):
+    """
+    ensure that a warning for "Unable to guess serializer" is not raised
+    on a view that defines only a get method i.e. we should not try to
+    determine the request serializer when inspecting a get operation for
+    possible error responses.
+    """
+    route = "get/"
+    view = GetView.as_view()
+    generate_view_schema(route, view)
+    stderr = capsys.readouterr().err
+    assert not stderr
