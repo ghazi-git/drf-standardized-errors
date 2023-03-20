@@ -9,7 +9,7 @@ repos:
       - id: check-yaml
 
   - repo: https://github.com/Zac-HD/shed
-    rev: 0.10.9
+    rev: 2023.3.1
     hooks:
       - id: shed
         additional_dependencies: [ 'black~=23.1' ]
@@ -22,7 +22,7 @@ repos:
         args: [ --max-line-length, '120' , --ignore, 'E,W']
 
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.991
+    rev: v1.1.1
     hooks:
       - id: mypy
         args: [ --ignore-missing-imports, --check-untyped-defs, --disallow-incomplete-defs ]
