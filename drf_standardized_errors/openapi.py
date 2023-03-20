@@ -135,14 +135,14 @@ class AutoSchema(BaseAutoSchema):
         add a validation error response when unsafe methods have a request body
         or when a list view implements filtering with django-filters.
         """
-        request_serializer = self.get_request_serializer()
-        has_request_body = self.method in ("PUT", "PATCH", "POST") and (
-            isinstance(request_serializer, serializers.Field)
-            or (
+
+        has_request_body = False
+        if self.method in ("PUT", "PATCH", "POST"):
+            request_serializer = self.get_request_serializer()
+            has_request_body = isinstance(request_serializer, serializers.Field) or (
                 inspect.isclass(request_serializer)
                 and issubclass(request_serializer, serializers.Field)
             )
-        )
 
         filter_backends = get_django_filter_backends(self.get_filter_backends())
         has_filters = any(

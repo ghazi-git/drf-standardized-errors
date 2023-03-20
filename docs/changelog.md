@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - declare support for type checking
 
+### Fixed
+- Avoid calling `AutoSchema.get_request_serializer` when inspecting a get operation for possible error responses.
+
 ## [0.12.5] - 2023-01-14
 ### Added
 - allow adding extra validation errors on an operation-basis using the new `@extend_validation_errors` decorator.
