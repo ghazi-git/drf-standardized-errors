@@ -268,10 +268,10 @@ class AutoSchema(BaseAutoSchema):
         http400_serializers = {}
         if self._should_add_validation_error_response():
             serializer = self._get_serializer_for_validation_error_response()
-            http400_serializers[ValidationErrorEnum.VALIDATION_ERROR] = serializer
+            http400_serializers[ValidationErrorEnum.VALIDATION_ERROR.value] = serializer
         if self._should_add_parse_error_response():
             serializer = ParseErrorResponseSerializer
-            http400_serializers[ClientErrorEnum.CLIENT_ERROR] = serializer
+            http400_serializers[ClientErrorEnum.CLIENT_ERROR.value] = serializer
 
         return PolymorphicProxySerializer(
             component_name=component_name,
