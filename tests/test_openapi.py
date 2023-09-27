@@ -616,3 +616,8 @@ def test_get_view_does_not_raise_missing_serializer_warning(capsys):
     generate_view_schema(route, view)
     stderr = capsys.readouterr().err
     assert not stderr
+
+
+def test_schema_generated(api_client):
+    response = api_client.get("/schema/")
+    assert response.status_code == 200
