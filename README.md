@@ -9,7 +9,7 @@ Standardize your [DRF](https://www.django-rest-framework.org/) API error respons
 [![PyPI - License](https://img.shields.io/pypi/l/drf-standardized-errors)](https://github.com/ghazi-git/drf-standardized-errors/blob/main/LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-By default, the package will convert all API error responses (4xx and 5xx) to a standardized format:
+By default, the package will convert all API error responses (4xx and 5xx) to the following standardized format:
 ```json
 {
   "type": "validation_error",
@@ -92,7 +92,12 @@ REST_FRAMEWORK = {
 ```
 
 ### Notes
-Standardized error responses when `DEBUG=True` for **unhandled exceptions** are disabled by default. That is
+- This package is a DRF exception handler, so it standardizes errors that reach a DRF API view. That means it cannot
+handle errors that happen at the middleware level for example. To handle those as well, you can customize
+the necessary [django error views](https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views).
+You can find more about that in [this issue](https://github.com/ghazi-git/drf-standardized-errors/issues/44).
+
+- Standardized error responses when `DEBUG=True` for **unhandled exceptions** are disabled by default. That is
 to allow you to get more information out of the traceback. You can enable standardized errors instead with:
 ```python
 DRF_STANDARDIZED_ERRORS = {"ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": True}
