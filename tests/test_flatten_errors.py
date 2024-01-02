@@ -109,7 +109,7 @@ def test_nested_list_serializer_error(nested_list_serializer_error):
     assert errors[0].attr == "recipients.1.email"
 
 
-def test_does_not_raise_recursion_error(api_client):
+def test_does_not_raise_recursion_error():
     client = APIClient()
     try:
         client.get("/recursion-error/")
