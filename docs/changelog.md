@@ -34,6 +34,7 @@ SPECTACULAR_SETTINGS = {
 
 ### Fixed
 - Ensure accurate traceback inclusion in 500 error emails sent to ADMINS by capturing the original exception information using `self.exc`. This fixes the issue where tracebacks were previously showing as None for `django version >= 4.1`.
+- Handle error responses with +1000 errors
 
 ## [0.12.6] - 2023-10-25
 ### Added

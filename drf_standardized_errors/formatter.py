@@ -104,27 +104,34 @@ def flatten_errors(
     }
     """
 
-    if not detail:
-        return []
-    elif isinstance(detail, list):
-        first_item, *rest = detail
-        if not isinstance(first_item, exceptions.ErrorDetail):
-            index = 0 if index is None else index + 1
-            if attr:
-                new_attr = f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{index}"
-            else:
-                new_attr = str(index)
-            return flatten_errors(first_item, new_attr, index) + flatten_errors(
-                rest, attr, index
-            )
+    # preserve the order of the previous implementation with a fifo queue
+    fifo = [(detail, attr, index)]
+    errors = []
+    while fifo:
+        detail, attr, index = fifo.pop(0)
+        if not detail:
+            continue
+        elif isinstance(detail, list):
+            for item in detail:
+                if not isinstance(item, exceptions.ErrorDetail):
+                    index = 0 if index is None else index + 1
+                    if attr:
+                        new_attr = (
+                            f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{index}"
+                        )
+                    else:
+                        new_attr = str(index)
+                    fifo.append((item, new_attr, index))
+                else:
+                    fifo.append((item, attr, index))
+
+        elif isinstance(detail, dict):
+            for key, value in detail.items():
+                if attr:
+                    key = f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{key}"
+                fifo.append((value, key, None))
+
         else:
-            return flatten_errors(first_item, attr, index) + flatten_errors(
-                rest, attr, index
-            )
-    elif isinstance(detail, dict):
-        (key, value), *rest = list(detail.items())
-        if attr:
-            key = f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{key}"
-        return flatten_errors(value, key) + flatten_errors(dict(rest), attr)
-    else:
-        return [Error(detail.code, str(detail), attr)]
+            errors.append(Error(detail.code, str(detail), attr))
+
+    return errors
