@@ -32,6 +32,9 @@ SPECTACULAR_SETTINGS = {
 - add compatibility with drf-spectacular 0.27
 - add support for django 5.0
 
+### Fixed
+- Ensure accurate traceback inclusion in 500 error emails sent to ADMINS by capturing the original exception information using `self.exc`. This fixes the issue where tracebacks were previously showing as None for `django version >= 4.1`.
+
 ## [0.12.6] - 2023-10-25
 ### Added
 - declare support for type checking

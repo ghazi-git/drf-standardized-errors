@@ -136,5 +136,5 @@ class ExceptionHandler:
                     getattr(request, "path", ""),
                     response=response,
                     request=request,
-                    exception=exc,
+                    exception=self.exc,
                 )
