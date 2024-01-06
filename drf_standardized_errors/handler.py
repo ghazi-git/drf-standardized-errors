@@ -120,10 +120,6 @@ class ExceptionHandler:
             except AttributeError:
                 request = None
             signals.got_request_exception.send(sender=None, request=request)
-
-            # Capture the original exception info
-            original_exc = sys.exc_info()
-
             if django.VERSION < (4, 1):
                 log_response(
                     "%s: %s",
@@ -131,7 +127,7 @@ class ExceptionHandler:
                     getattr(request, "path", ""),
                     response=response,
                     request=request,
-                    exc_info=original_exc,
+                    exc_info=sys.exc_info(),
                 )
             else:
                 log_response(
@@ -140,7 +136,5 @@ class ExceptionHandler:
                     getattr(request, "path", ""),
                     response=response,
                     request=request,
-                    exception=original_exc[1],
+                    exception=self.exc,
                 )
-
-            del original_exc
