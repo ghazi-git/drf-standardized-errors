@@ -1,5 +1,6 @@
 import pytest
 from rest_framework.exceptions import ErrorDetail
+from rest_framework.test import APIClient
 
 from drf_standardized_errors.formatter import flatten_errors
 
@@ -106,3 +107,14 @@ def test_nested_list_serializer_error(nested_list_serializer_error):
     assert errors[0].code == "invalid"
     assert errors[0].detail == "Enter a valid email address."
     assert errors[0].attr == "recipients.1.email"
+
+
+def test_does_not_raise_recursion_error():
+    client = APIClient()
+    try:
+        client.get("/recursion-error/")
+    except RecursionError:
+        pytest.fail(
+            "Failed due to a recursion error. Use an iterative approach rather than "
+            "a recursive one to avoid reaching the maximum recursion depth in python."
+        )

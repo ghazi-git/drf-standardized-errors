@@ -67,3 +67,9 @@ class RateLimitErrorView(APIView):
 
     def get(self, request, *args, **kwargs):
         return Response(status=204)
+
+
+class RecursionView(APIView):
+    def get(self, request, *args, **kwargs):
+        errors = [{"field": ["Some Error"]} for _ in range(1, 1000)]
+        raise serializers.ValidationError(errors)

@@ -7,6 +7,7 @@ from .views import (
     IntegrityErrorView,
     OrderErrorView,
     RateLimitErrorView,
+    RecursionView,
 )
 
 urlpatterns = [
@@ -15,5 +16,6 @@ urlpatterns = [
     path("order-error/", OrderErrorView.as_view()),
     path("auth-error/", AuthErrorView.as_view()),
     path("rate-limit-error/", RateLimitErrorView.as_view()),
+    path("recursion-error/", RecursionView.as_view()),
     path("schema/", SpectacularAPIView.as_view(), name="api-schema"),
 ]
