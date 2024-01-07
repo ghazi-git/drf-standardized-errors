@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import Any, Dict, List, Set, Type, Union
 
 from drf_spectacular.drainage import warn
+from drf_spectacular.extensions import OpenApiFilterExtension
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
 from drf_spectacular.utils import PolymorphicProxySerializer
 from inflection import camelize
@@ -145,10 +146,14 @@ class AutoSchema(BaseAutoSchema):
             )
 
         filter_backends = get_django_filter_backends(self.get_filter_backends())
+        filter_extensions = [
+            OpenApiFilterExtension.get_match(backend) for backend in filter_backends
+        ]
         has_filters = any(
             [
-                filter_backend.get_schema_operation_parameters(self.view)
-                for filter_backend in filter_backends
+                filter_extension.get_schema_operation_parameters(self)
+                for filter_extension in filter_extensions
+                if filter_extension
             ]
         )
         has_extra_validation_errors = bool(self._get_extra_validation_errors())
