@@ -29,7 +29,7 @@ SPECTACULAR_SETTINGS = {
 ```
 
 ### Added
-- add compatibility with drf-spectacular 0.27
+- add compatibility with drf-spectacular 0.27.x
 - add support for django 5.0
 
 ### Fixed
