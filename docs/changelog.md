@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+
+## [0.13.0] - 2024-02-28
 ### Changed
 - If you're using drf-spectacular 0.27.0 or newer, update `ENUM_NAME_OVERRIDES` entries to reference `choices`
 rather than `values`. The list of overrides specific to this package should become like this:
