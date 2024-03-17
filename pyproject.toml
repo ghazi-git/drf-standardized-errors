@@ -58,7 +58,7 @@ release = [
     "tbump",
 ]
 openapi = [
-    "drf-spectacular",
+    "drf-spectacular>=0.27.0",
     "inflection",
 ]
 
