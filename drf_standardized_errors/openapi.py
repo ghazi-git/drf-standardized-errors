@@ -150,11 +150,9 @@ class AutoSchema(BaseAutoSchema):
             OpenApiFilterExtension.get_match(backend) for backend in filter_backends
         ]
         has_filters = any(
-            [
-                filter_extension.get_schema_operation_parameters(self)
-                for filter_extension in filter_extensions
-                if filter_extension
-            ]
+            filter_extension.get_schema_operation_parameters(self)
+            for filter_extension in filter_extensions
+            if filter_extension
         )
         has_extra_validation_errors = bool(self._get_extra_validation_errors())
         return has_request_body or has_filters or has_extra_validation_errors
