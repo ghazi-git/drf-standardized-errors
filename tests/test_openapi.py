@@ -7,9 +7,11 @@ from drf_spectacular.generators import SchemaGenerator
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
     OpenApiCallback,
+    OpenApiExample,
     OpenApiResponse,
     PolymorphicProxySerializer,
     extend_schema,
+    extend_schema_serializer,
     inline_serializer,
 )
 from rest_framework import serializers
@@ -621,3 +623,36 @@ def test_get_view_does_not_raise_missing_serializer_warning(capsys):
 def test_schema_generated(api_client):
     response = api_client.get("/schema/")
     assert response.status_code == 200
+
+
+@extend_schema_serializer(
+    examples=[
+        OpenApiExample(
+            "extend_schema_serializer_example",
+            summary="short summary",
+            value={"field": "specific_value"},
+            response_only=True,
+        ),
+    ]
+)
+class SomeSerializer(serializers.Serializer):
+    field = serializers.CharField()
+
+
+class ExtendSchemaSerializerView(GenericAPIView):
+    serializer_class = SomeSerializer
+
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(instance={"field": "value1"})
+        return Response(serializer.data)
+
+
+def test_examples_from_extend_schema_serializer_are_showing_up(api_client):
+    view = ExtendSchemaSerializerView.as_view()
+    schema = generate_view_schema("extend_schema_serializer/", view)
+    resp200 = schema["paths"]["/extend_schema_serializer/"]["get"]["responses"]["200"]
+    assert "examples" in resp200["content"]["application/json"]
+    examples = resp200["content"]["application/json"]["examples"]
+    assert (
+        examples["ExtendSchemaSerializerExample"]["value"]["field"] == "specific_value"
+    )

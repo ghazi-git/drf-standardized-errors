@@ -337,5 +337,14 @@ class AutoSchema(BaseAutoSchema):
 
         return extra_codes_by_field
 
-    def get_examples(self) -> list:
-        return get_error_examples()
+    def _get_examples(
+        self, serializer, direction, media_type, status_code=None, extras=None
+    ):
+        all_examples = (extras or []) + get_error_examples()
+        return super()._get_examples(
+            serializer,
+            direction,
+            media_type,
+            status_code=status_code,
+            extras=all_examples,
+        )
