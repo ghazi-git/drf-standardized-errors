@@ -32,7 +32,7 @@ class PackageSettings:
 
     def __getattr__(self, attr: str) -> Any:
         if attr not in self.defaults:
-            raise AttributeError("Invalid API setting: '%s'" % attr)
+            raise AttributeError(f"Invalid API setting: '{attr}'")
 
         try:
             # Check if present in user settings
