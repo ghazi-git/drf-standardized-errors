@@ -656,3 +656,77 @@ def test_examples_from_extend_schema_serializer_are_showing_up(api_client):
     assert (
         examples["ExtendSchemaSerializerExample"]["value"]["field"] == "specific_value"
     )
+
+
+class CustomError403Serializer(serializers.Serializer):
+    code = serializers.ChoiceField(choices=[("perm_denied", "perm_denied")])
+    detail = serializers.CharField()
+    attr = serializers.CharField(allow_null=True)
+
+
+class CustomErrorResponse403Serializer(serializers.Serializer):
+    type = serializers.ChoiceField(choices=ClientErrorEnum.choices)
+    errors = CustomError403Serializer(many=True)
+
+
+class ExpSerializer(serializers.Serializer):
+    field = serializers.CharField()
+
+
+class ExamplesView(GenericAPIView):
+    authentication_classes = [BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    serializer_class = ExpSerializer
+
+    @extend_schema(
+        responses={
+            403: OpenApiResponse(
+                response=CustomErrorResponse403Serializer,
+                description="Registration is disabled",
+            )
+        },
+        examples=[
+            OpenApiExample(
+                "Example",
+                summary="short summary",
+                description="longer description",
+                value={
+                    "type": "client_error",
+                    "errors": [
+                        {
+                            "code": "perm_denied",
+                            "detail": "Registration is disabled.",
+                            "attr": None,
+                        }
+                    ],
+                },
+                status_codes=[403],
+            ),
+        ],
+    )
+    def get(self, request, *args, **kwargs):
+        serializer = self.get_serializer(instance={"field": "value1"})
+        return Response(serializer.data)
+
+
+def test_default_examples_are_showing_up_only_when_status_code_is_allowed(
+    api_client, settings
+):
+    settings.DRF_STANDARDIZED_ERRORS = {"ALLOWED_ERROR_STATUS_CODES": ["403"]}
+
+    route = "perm-denied/"
+    view = ExamplesView.as_view()
+    schema = generate_view_schema(route, view)
+    responses = get_responses(schema, route)
+    examples = responses["403"]["content"]["application/json"]["examples"]
+    assert "Example" in examples
+    assert "PermissionDenied" in examples
+
+    settings.DRF_STANDARDIZED_ERRORS = {"ALLOWED_ERROR_STATUS_CODES": []}
+    route = "perm-denied/"
+    view = ExamplesView.as_view()
+    schema = generate_view_schema(route, view)
+    responses = get_responses(schema, route)
+    examples = responses["403"]["content"]["application/json"]["examples"]
+    assert "Example" in examples
+    assert "PermissionDenied" not in examples
