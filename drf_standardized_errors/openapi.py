@@ -1,11 +1,16 @@
 import inspect
 from collections import defaultdict
-from typing import Any, Dict, List, Set, Type, Union
+from typing import Dict, List, Set, Type, Union
 
 from drf_spectacular.drainage import warn
 from drf_spectacular.extensions import OpenApiFilterExtension
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
-from drf_spectacular.utils import OpenApiExample, PolymorphicProxySerializer
+from drf_spectacular.utils import (
+    Direction,
+    OpenApiExample,
+    PolymorphicProxySerializer,
+    _SchemaType,
+)
 from inflection import camelize
 from rest_framework import serializers
 from rest_framework.negotiation import DefaultContentNegotiation
@@ -51,7 +56,7 @@ S = Union[Type[serializers.Serializer], serializers.Serializer]
 
 
 class AutoSchema(BaseAutoSchema):
-    def _get_response_bodies(self, direction: str = "response") -> Dict[str, Any]:
+    def _get_response_bodies(self, direction: Direction = "response") -> _SchemaType:
         responses = super()._get_response_bodies(direction=direction)
         if direction == "response":
             error_responses = {}
