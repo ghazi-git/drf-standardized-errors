@@ -205,7 +205,7 @@ def get_serializer_field_error_codes(field: serializers.Field, attr: str) -> Set
     # for top-level (as opposed to nested) serializer non_field_errors,
     # "required" and "null" errors are not raised
     if attr == drf_settings.NON_FIELD_ERRORS_KEY:
-        error_codes = set(error_codes).difference(["required", "null"])
+        error_codes = set(error_codes).difference(["required"])
 
     # for ManyRelatedFields, add the error codes from the child_relation
     # to the parent error codes. That's because DRF raises child_relation

@@ -216,12 +216,17 @@ def test_error_codes_for_polymorphic_serializer():
     create_error_codes = schema["components"]["schemas"][
         "ValidateCreateNonFieldErrorsErrorComponent"
     ]["properties"]["code"]["enum"]
-    assert set(create_error_codes) == {"invalid", "object1_code", "object2_code"}
+    assert set(create_error_codes) == {
+        "invalid",
+        "null",
+        "object1_code",
+        "object2_code",
+    }
 
     patch_error_codes = schema["components"]["schemas"][
         "ValidatePartialUpdateNonFieldErrorsErrorComponent"
     ]["properties"]["code"]["enum"]
-    assert set(patch_error_codes) == {"invalid", "object1_code", "object2_code"}
+    assert set(patch_error_codes) == {"invalid", "null", "object1_code", "object2_code"}
 
 
 class CustomFilterSet(FilterSet):

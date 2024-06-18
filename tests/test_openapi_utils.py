@@ -298,7 +298,7 @@ def serializer():
 def test_top_level_non_field_errors_error_codes(serializer):
     """required and null should NOT be listed as error codes"""
     (field,) = get_serializer_fields_with_error_codes([serializer])
-    assert field.error_codes == {"invalid"}
+    assert field.error_codes == {"invalid", "null"}
 
 
 @pytest.fixture
