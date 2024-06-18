@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Set, Type, Union
 from drf_spectacular.drainage import warn
 from drf_spectacular.extensions import OpenApiFilterExtension
 from drf_spectacular.openapi import AutoSchema as BaseAutoSchema
-from drf_spectacular.utils import PolymorphicProxySerializer
+from drf_spectacular.utils import OpenApiExample, PolymorphicProxySerializer
 from inflection import camelize
 from rest_framework import serializers
 from rest_framework.negotiation import DefaultContentNegotiation
@@ -338,7 +338,10 @@ class AutoSchema(BaseAutoSchema):
     def _get_examples(
         self, serializer, direction, media_type, status_code=None, extras=None
     ):
-        all_examples = (extras or []) + get_error_examples()
+        if direction == "response":
+            all_examples = (extras or []) + self._get_error_response_examples()
+        else:
+            all_examples = extras
         return super()._get_examples(
             serializer,
             direction,
@@ -346,3 +349,12 @@ class AutoSchema(BaseAutoSchema):
             status_code=status_code,
             extras=all_examples,
         )
+
+    def _get_error_response_examples(self) -> List[OpenApiExample]:
+        status_codes = set(self._get_allowed_error_status_codes())
+        examples = get_error_examples()
+        return [
+            example
+            for example in examples
+            if status_codes.intersection(example.status_codes)
+        ]

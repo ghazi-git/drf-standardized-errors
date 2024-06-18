@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - enforce support of only drf-spectacular 0.27 and newer in pyproject.toml
 - ensure examples from `@extend_schema_serializer` are not ignored when adding error response examples
+- show default error response examples only when the corresponding status code is allowed
 
 ## [0.13.0] - 2024-02-28
 ### Changed
