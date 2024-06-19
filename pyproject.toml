@@ -65,7 +65,7 @@ openapi = [
 [tool.tbump]
 
 [tool.tbump.version]
-current = "0.13.0"
+current = "0.14.0"
 regex = '''
   (?P<major>\d+)
   \.
