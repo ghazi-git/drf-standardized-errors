@@ -49,3 +49,6 @@ SPECTACULAR_SETTINGS = {
         "drf_standardized_errors.openapi_hooks.postprocess_schema_enums"
     ],
 }
+
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
