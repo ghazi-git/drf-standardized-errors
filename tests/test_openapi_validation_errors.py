@@ -4,7 +4,7 @@ from django.views.generic import UpdateView
 from drf_spectacular.utils import extend_schema
 from rest_framework import serializers
 from rest_framework.decorators import action, api_view
-from rest_framework.generics import DestroyAPIView, UpdateAPIView
+from rest_framework.generics import DestroyAPIView, GenericAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.versioning import URLPathVersioning
 from rest_framework.viewsets import ModelViewSet
@@ -512,3 +512,45 @@ def test_extra_validation_errors_for_nested_list_serializer_field(
     schema = generate_view_schema(route, view)
     error_codes = get_error_codes(schema, "ValidateCreateGroupsINDEXNameErrorComponent")
     assert "some_error" in error_codes
+
+
+def test_pattern_for_list_serializer_field(viewset_with_nested_serializer):
+    route = "validate/"
+    view = viewset_with_nested_serializer.as_view({"post": "create"})
+    schema = generate_view_schema(route, view)
+    attr = schema["components"]["schemas"][
+        "ValidateCreateGroupsINDEXNameErrorComponent"
+    ]["properties"]["attr"]
+    assert attr["pattern"] == r"groups\.\d+\.name"
+
+
+@pytest.fixture
+def list_dict_fields_view():
+    class SomeSerializer(serializers.Serializer):
+        field1 = serializers.DictField(child=serializers.IntegerField())
+        field2 = serializers.ListField(child=serializers.IntegerField())
+
+    class SomeView(GenericAPIView):
+        serializer_class = SomeSerializer
+
+        def post(self, request, *args, **kwargs):
+            serializer = self.get_serializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data)
+
+    return SomeView
+
+
+def test_pattern_for_list_dict_fields(list_dict_fields_view):
+    route = "validate/"
+    view = list_dict_fields_view.as_view()
+    schema = generate_view_schema(route, view)
+    dict_attr = schema["components"]["schemas"][
+        "ValidateCreateField1KEYErrorComponent"
+    ]["properties"]["attr"]
+    assert dict_attr["pattern"] == r"field1\..+"
+
+    list_attr = schema["components"]["schemas"][
+        "ValidateCreateField2INDEXErrorComponent"
+    ]["properties"]["attr"]
+    assert list_attr["pattern"] == r"field2\.\d+"
