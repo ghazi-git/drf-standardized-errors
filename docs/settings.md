@@ -43,16 +43,18 @@ DRF_STANDARDIZED_ERRORS = {
     "ERROR_SCHEMAS": None,
 
     # When there is a validation error in list serializers, the "attr" returned
-    # will be sth like "0.email", "1.email", "2.email", ... So, to describe
-    # the error codes linked to the same field in a list serializer, the field
-    # will appear in the schema with the name "INDEX.email"
+    # will be sth like "0.email", "1.email", "2.email", ... So, this setting is
+    # used to represent the error codes linked to the same field during API
+    # schema generation and its value will be part of the name of the
+    # corresponding error component.
     "LIST_INDEX_IN_API_SCHEMA": "INDEX",
 
     # When there is a validation error in a DictField with the name "extra_data",
     # the "attr" returned will be sth like "extra_data.<key1>", "extra_data.<key2>",
     # "extra_data.<key3>", ... Since the keys of a DictField are not predetermined,
-    # this setting is used as a common name to be used in the API schema. So, the
-    # corresponding "attr" value for the previous example will be "extra_data.KEY"
+    # this setting is used to represent the error codes linked to the same field
+    # during API schema generation and its value will be part of the name of the
+    # corresponding error component.
     "DICT_KEY_IN_API_SCHEMA": "KEY",
 
     # should be unique to error components since it is used to identify error
