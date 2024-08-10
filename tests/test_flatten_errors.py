@@ -118,3 +118,11 @@ def test_does_not_raise_recursion_error():
             "Failed due to a recursion error. Use an iterative approach rather than "
             "a recursive one to avoid reaching the maximum recursion depth in python."
         )
+
+
+def test_exception_with_detail_empty():
+    detail = {"some_field": [ErrorDetail("", code="invalid")]}
+    errors = flatten_errors(detail)
+    assert len(errors) == 1
+    assert errors[0].attr == "some_field"
+    assert errors[0].detail == ""

@@ -109,7 +109,7 @@ def flatten_errors(
     errors = []
     while fifo:
         detail, attr, index = fifo.pop(0)
-        if not detail:
+        if not detail and detail != "":
             continue
         elif isinstance(detail, list):
             for item in detail:
