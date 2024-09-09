@@ -2,6 +2,7 @@ from django.db import IntegrityError
 from rest_framework import serializers
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.generics import GenericAPIView
+from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.throttling import BaseThrottle
@@ -73,3 +74,28 @@ class RecursionView(APIView):
     def get(self, request, *args, **kwargs):
         errors = [{"field": ["Some Error"]} for _ in range(1, 1000)]
         raise serializers.ValidationError(errors)
+
+
+class ListFieldFuzzingSerializer(serializers.Serializer):
+    field1 = serializers.ListField(child=serializers.IntegerField())
+
+
+class SomeSerializer(serializers.Serializer):
+    field2 = serializers.IntegerField()
+
+
+class ListSerializerFuzzingSerializer(serializers.Serializer):
+    field1 = SomeSerializer(many=True)
+
+
+class DictFieldFuzzingSerializer(serializers.Serializer):
+    field1 = serializers.DictField(child=serializers.IntegerField())
+
+
+class FuzzingView(GenericAPIView):
+    parser_classes = [JSONParser]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(data=serializer.data)

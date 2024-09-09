@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+### Fixed
+- use a pattern to correctly describe the `attr` value in validation errors in all cases. Specifically, this fixes
+the incorrect description of the `attr` value for list serializers and list/dict fields. Previously, the `attr`
+value was described with an enum having a single value like `INDEX.field`. Now, it shows up as a string with
+the pattern `\d+\.field`.
 
 ## [0.14.1] - 2024-08-10
 ### Fixed

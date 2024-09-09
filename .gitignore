@@ -44,3 +44,5 @@ ENV/
 # IDE settings
 .vscode/
 .idea/
+
+tests/.hypothesis

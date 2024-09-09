@@ -1,9 +1,11 @@
+import re
 from dataclasses import dataclass, field as dataclass_field
-from typing import Any, Dict, List, Optional, Set, Type, Union
+from typing import Dict, List, Optional, Set, Type, Union
 
 from django import forms
 from django.core.validators import (
     DecimalValidator,
+    RegexValidator,
     validate_image_file_extension,
     validate_integer,
     validate_ipv4_address,
@@ -421,21 +423,16 @@ def get_validation_error_serializer(
 def get_error_serializer(
     operation_id: str, attr: Optional[str], error_codes: Set[str]
 ) -> Type[serializers.Serializer]:
-    attr_kwargs: Dict[str, Any] = {"choices": [(attr, attr)]}
-    if not attr:
-        attr_kwargs["allow_null"] = True
+    if attr is not None:
+        attr_regex = _get_attr_regex(attr)
+        attr_field = serializers.CharField(validators=[RegexValidator(attr_regex)])
+    else:
+        attr_field = serializers.CharField(allow_null=True)
     error_code_choices = sorted(zip(error_codes, error_codes))
-
-    camelcase_operation_id = camelize(operation_id)
-    attr_with_underscores = (attr or "").replace(
-        package_settings.NESTED_FIELD_SEPARATOR, "_"
-    )
-    camelcase_attr = camelize(attr_with_underscores)
-    suffix = package_settings.ERROR_COMPONENT_NAME_SUFFIX
-    component_name = f"{camelcase_operation_id}{camelcase_attr}{suffix}"
+    component_name = _get_error_component_name(operation_id, attr)
 
     class ErrorSerializer(serializers.Serializer):
-        attr = serializers.ChoiceField(**attr_kwargs)
+        attr = attr_field
         code = serializers.ChoiceField(choices=error_code_choices)
         detail = serializers.CharField()
 
@@ -443,6 +440,49 @@ def get_error_serializer(
             ref_name = component_name
 
     return ErrorSerializer
+
+
+def _get_attr_regex(attr: str) -> str:
+    r"""
+    - For ListSerializers:
+        - input attr: "INDEX.field1", "INDEX.field2", ...
+        - regex generated: "\d+\.field1", "\d+\.field2", ...
+        - actual field name: "0.field1", "1.field2", ...
+    - For ListFields:
+        - input attr: "field.INDEX"
+        - regex generated: "field\.\d+"
+        - actual field name: "0.field1", "1.field2", ...
+    - For DictFields:
+        - input attr: "field.KEY"
+        - regex generated: "field\..+"
+        - actual field name: "field.key1", "field.key2", ...
+    - For other cases
+        - input attr: "field.nested_field"
+        - regex generated: "field\.nested_field"
+        - actual field name: "field.nested_field"
+    """
+    parts = attr.split(package_settings.NESTED_FIELD_SEPARATOR)
+    regex_parts = []
+    for part in parts:
+        if part == package_settings.LIST_INDEX_IN_API_SCHEMA:
+            regex_parts.append(r"\d+")
+        elif part == package_settings.DICT_KEY_IN_API_SCHEMA:
+            regex_parts.append(".+")
+        else:
+            regex_parts.append(re.escape(part))
+
+    escaped_separator = re.escape(package_settings.NESTED_FIELD_SEPARATOR)
+    return escaped_separator.join(regex_parts)
+
+
+def _get_error_component_name(operation_id: str, attr: Optional[str]) -> str:
+    camelcase_operation_id = camelize(operation_id)
+    attr_with_underscores = (attr or "").replace(
+        package_settings.NESTED_FIELD_SEPARATOR, "_"
+    )
+    camelcase_attr = camelize(attr_with_underscores)
+    suffix = package_settings.ERROR_COMPONENT_NAME_SUFFIX
+    return f"{camelcase_operation_id}{camelcase_attr}{suffix}"
 
 
 @dataclass
