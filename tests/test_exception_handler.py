@@ -48,11 +48,6 @@ def test_permission_denied_error(permission_denied_error, exception_context):
     assert error["attr"] is None
 
 
-@pytest.fixture
-def server_error():
-    return APIException()
-
-
 def test_server_error(server_error, exception_context):
     response = exception_handler(server_error, exception_context)
     assert response.status_code == 500

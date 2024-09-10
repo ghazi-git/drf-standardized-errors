@@ -15,7 +15,7 @@ class IntegrityErrorView(APIView):
 
 class ErrorView(APIView):
     def get(self, request, *args, **kwargs):
-        raise Exception("Internal server error.")
+        raise Exception("Unhandled server error.")
 
 
 class ShippingAddressSerializer(serializers.Serializer):

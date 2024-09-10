@@ -1,4 +1,5 @@
 import pytest
+from rest_framework.exceptions import APIException
 from rest_framework.test import APIClient, APIRequestFactory
 
 from .views import ErrorView
@@ -22,4 +23,9 @@ def exception_context(api_request):
 
 @pytest.fixture
 def exc():
-    return Exception("Internal server error.")
+    return Exception("Unhandled server error.")
+
+
+@pytest.fixture
+def server_error():
+    return APIException()

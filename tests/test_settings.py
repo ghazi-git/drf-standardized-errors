@@ -41,7 +41,7 @@ def test_custom_exception_formatter_class(settings, api_client):
     assert response.status_code == 500
     assert response.data["type"] == "server_error"
     assert response.data["code"] == "error"
-    assert response.data["message"] == "Internal server error."
+    assert response.data["message"] == "Unhandled server error."
     assert response.data["field_name"] is None
 
 
@@ -82,7 +82,7 @@ def test_enable_in_debug_for_unhandled_exception_is_true(
     assert len(response.data["errors"]) == 1
     error = response.data["errors"][0]
     assert error["code"] == "error"
-    assert error["detail"] == "Internal server error."
+    assert error["detail"] == "Unhandled server error."
     assert error["attr"] is None
 
 
@@ -100,3 +100,27 @@ def test_nested_field_separator(settings, api_client):
     error = response.data["errors"][0]
     assert error["code"] == "unsupported"
     assert error["attr"] == "shipping_address__state"
+
+
+def test_hide_500_error_details_is_true(settings, server_error, exception_context):
+    settings.DRF_STANDARDIZED_ERRORS = {"HIDE_500_ERROR_DETAILS": True}
+    response = exception_handler(server_error, exception_context)
+    assert response.status_code == 500
+    assert response.data["type"] == "server_error"
+    assert len(response.data["errors"]) == 1
+    error = response.data["errors"][0]
+    assert error["code"] == "error"
+    assert error["detail"] == "Internal Server Error"
+    assert error["attr"] is None
+
+
+def test_hide_500_error_details_is_false(settings, server_error, exception_context):
+    settings.DRF_STANDARDIZED_ERRORS = {"HIDE_500_ERROR_DETAILS": False}
+    response = exception_handler(server_error, exception_context)
+    assert response.status_code == 500
+    assert response.data["type"] == "server_error"
+    assert len(response.data["errors"]) == 1
+    error = response.data["errors"][0]
+    assert error["code"] == "error"
+    assert error["detail"] == "A server error occurred."
+    assert error["attr"] is None
