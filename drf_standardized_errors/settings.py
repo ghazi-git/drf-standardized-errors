@@ -68,6 +68,7 @@ DEFAULTS: Dict[str, Any] = {
     "EXCEPTION_HANDLER_CLASS": "drf_standardized_errors.handler.ExceptionHandler",
     "EXCEPTION_FORMATTER_CLASS": "drf_standardized_errors.formatter.ExceptionFormatter",
     "ENABLE_IN_DEBUG_FOR_UNHANDLED_EXCEPTIONS": False,
+    "HIDE_5XX_ERROR_DETAILS": False,
     "NESTED_FIELD_SEPARATOR": ".",
     "ALLOWED_ERROR_STATUS_CODES": [
         "400",
