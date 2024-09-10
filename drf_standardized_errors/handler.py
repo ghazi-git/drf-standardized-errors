@@ -39,7 +39,7 @@ class ExceptionHandler:
             return None
 
         exc = self.convert_unhandled_exceptions(exc)
-        exc = self.hide_5xx_error_details(exc)
+        exc = self.hide_500_error_details(exc)
         data = self.format_exception(exc)
         self.set_rollback()
         response = self.get_response(exc, data)
@@ -80,11 +80,11 @@ class ExceptionHandler:
         else:
             return exc
 
-    def hide_5xx_error_details(
+    def hide_500_error_details(
         self, exc: exceptions.APIException
     ) -> exceptions.APIException:
         msg = "Internal Server Error"
-        if package_settings.HIDE_5XX_ERROR_DETAILS and is_server_error(exc.status_code):
+        if package_settings.HIDE_500_ERROR_DETAILS and (exc.status_code == 500):
             return exceptions.APIException(detail=msg)
         return exc
 
