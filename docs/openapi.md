@@ -403,7 +403,7 @@ from drf_spectacular.utils import OpenApiExample
 
 
 class CustomAutoSchema(AutoSchema):
-    def get_examples(self):
+    def _get_error_response_examples(self):
         errors = [exceptions.PermissionDenied(), exceptions.NotFound()]
         return [get_example_from_exception(error) for error in errors]
 
