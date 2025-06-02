@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [UNRELEASED]
 ### Added
 - add support for python 3.13
+- add support for django 5.2
+- add support for DRF 3.16
 
 ## [0.14.1] - 2024-08-10
 ### Added

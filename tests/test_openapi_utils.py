@@ -595,7 +595,10 @@ def test_choice_fields_with_error_codes():
 
 class MultiValueForm(forms.Form):
     split = forms.SplitDateTimeField()
-    disabled = forms.URLField(disabled=True)
+    if django.VERSION >= (5, 0):
+        disabled = forms.URLField(disabled=True, assume_scheme="https")
+    else:
+        disabled = forms.URLField(disabled=True)
 
 
 def test_multi_value_fields_with_error_codes():
