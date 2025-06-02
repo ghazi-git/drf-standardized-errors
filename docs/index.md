@@ -8,6 +8,7 @@ quickstart.md
 settings.md
 error_response.md
 customization.md
+faq.md
 gotchas.md
 openapi.md
 openapi_sample_description.md
