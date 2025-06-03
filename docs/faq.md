@@ -43,3 +43,26 @@ You can check this [issue](https://github.com/ghazi-git/drf-standardized-errors/
 for a possible solution. Still, `djangorestframework-camel-case` is built to work specifically with
 the default exception handler from DRF. It assumes that field names are the keys in the returned dict.
 So, that does not work well with this package.
+
+
+## How can I change the default error message for unhandled exceptions
+
+You need to create a custom exception handler class
+```python
+from rest_framework.exceptions import APIException
+from drf_standardized_errors.handler import ExceptionHandler
+
+class MyExceptionHandler(ExceptionHandler):
+    def convert_unhandled_exceptions(self, exc: Exception) -> APIException:
+        if not isinstance(exc, APIException):
+            return APIException(detail="New error message")
+        else:
+            return exc
+```
+Then, update the settings to point to your exception handler class
+```python
+DRF_STANDARDIZED_ERRORS = {
+    # ...
+    "EXCEPTION_HANDLER_CLASS": "path.to.MyExceptionHandler"
+}
+```
