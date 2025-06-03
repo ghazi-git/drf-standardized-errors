@@ -75,7 +75,10 @@ class ExceptionHandler:
         has a 500 status code.
         """
         if not isinstance(exc, exceptions.APIException):
-            return exceptions.APIException(detail=str(exc))
+            # return a generic error message to avoid potentially leaking sensitive
+            # data and match DRF/django behavior (same generic error message returned
+            # by django.views.defaults.server_error)
+            return exceptions.APIException(detail="Server Error (500)")
         else:
             return exc
 

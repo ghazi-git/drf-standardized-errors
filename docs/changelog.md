@@ -10,6 +10,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - add support for django 5.2
 - add support for DRF 3.16
 
+### Changed (backward-incompatible)
+- Unhandled exceptions now return a generic error message by default. This avoids unintentionally leaking
+sensitive data included in the exception message. To revert to the old behavior or change the default error
+message:
+  - create a custom exception handler class
+    ```python
+    from rest_framework.exceptions import APIException
+    from drf_standardized_errors.handler import ExceptionHandler
+    
+    class MyExceptionHandler(ExceptionHandler):
+        def convert_unhandled_exceptions(self, exc: Exception) -> APIException:
+            if not isinstance(exc, APIException):
+                # `return APIException(detail=str(exc))` restores the old behavior 
+                return APIException(detail="New error message")
+            else:
+                return exc
+    ```
+  - Then, update the settings to point to your exception handler class
+    ```python
+    DRF_STANDARDIZED_ERRORS = {
+        # ...
+        "EXCEPTION_HANDLER_CLASS": "path.to.MyExceptionHandler"
+    }
+    ```
+
 ## [0.14.1] - 2024-08-10
 ### Added
 - declare support for django 5.1

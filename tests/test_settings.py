@@ -41,7 +41,7 @@ def test_custom_exception_formatter_class(settings, api_client):
     assert response.status_code == 500
     assert response.data["type"] == "server_error"
     assert response.data["code"] == "error"
-    assert response.data["message"] == "Internal server error."
+    assert response.data["message"] == "Server Error (500)"
     assert response.data["field_name"] is None
 
 
@@ -82,7 +82,7 @@ def test_enable_in_debug_for_unhandled_exception_is_true(
     assert len(response.data["errors"]) == 1
     error = response.data["errors"][0]
     assert error["code"] == "error"
-    assert error["detail"] == "Internal server error."
+    assert error["detail"] == "Server Error (500)"
     assert error["attr"] is None
 
 
