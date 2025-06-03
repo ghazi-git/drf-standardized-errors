@@ -34,6 +34,7 @@ message:
         "EXCEPTION_HANDLER_CLASS": "path.to.MyExceptionHandler"
     }
     ```
+- set minimum version of drf-spectacular to 0.27.1
 
 ## [0.14.1] - 2024-08-10
 ### Added
