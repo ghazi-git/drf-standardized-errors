@@ -1,5 +1,6 @@
 from django.urls import path
 from drf_spectacular.views import SpectacularAPIView
+from rest_framework.permissions import IsAdminUser
 
 from .views import (
     AuthErrorView,
@@ -18,4 +19,8 @@ urlpatterns = [
     path("rate-limit-error/", RateLimitErrorView.as_view()),
     path("recursion-error/", RecursionView.as_view()),
     path("schema/", SpectacularAPIView.as_view(), name="api-schema"),
+    path(
+        "protected-schema/",
+        SpectacularAPIView.as_view(permission_classes=[IsAdminUser]),
+    ),
 ]

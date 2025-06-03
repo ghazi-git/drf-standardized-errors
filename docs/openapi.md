@@ -196,7 +196,7 @@ REST_FRAMEWORK = {
 
 ### Already using a custom `AutoSchema` class
 If you're already overriding the `AutoSchema` class provided by drf-spectacular, be sure to inherit from the
-AutoSchema class provided by this package instead. Also, if you're overriding `get_examples` and/or
+AutoSchema class provided by this package instead. Also, if you're overriding `_get_examples` and/or
 `_get_response_bodies`, be sure to call `super`.
 
 

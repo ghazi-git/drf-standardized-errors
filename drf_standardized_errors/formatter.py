@@ -5,7 +5,15 @@ from rest_framework import exceptions
 from rest_framework.status import is_client_error
 
 from .settings import package_settings
-from .types import Error, ErrorResponse, ErrorType, ExceptionHandlerContext
+from .types import (
+    CLIENT_ERROR,
+    SERVER_ERROR,
+    VALIDATION_ERROR,
+    Error,
+    ErrorResponse,
+    ErrorType,
+    ExceptionHandlerContext,
+)
 
 
 class ExceptionFormatter:
@@ -42,11 +50,11 @@ class ExceptionFormatter:
 
     def get_error_type(self) -> ErrorType:
         if isinstance(self.exc, exceptions.ValidationError):
-            return ErrorType.VALIDATION_ERROR
+            return VALIDATION_ERROR
         elif is_client_error(self.exc.status_code):
-            return ErrorType.CLIENT_ERROR
+            return CLIENT_ERROR
         else:
-            return ErrorType.SERVER_ERROR
+            return SERVER_ERROR
 
     def get_errors(self) -> List[Error]:
         """

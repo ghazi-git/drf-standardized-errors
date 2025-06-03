@@ -34,6 +34,20 @@ message:
         "EXCEPTION_HANDLER_CLASS": "path.to.MyExceptionHandler"
     }
     ```
+- set minimum version of drf-spectacular to 0.27.1
+- `drf_standardized_errors.types.ErrorType` is now the following type hint
+    ```python
+    from typing import Literal
+    ErrorType = Literal["validation_error", "client_error", "server_error"]
+    ```
+    `ErrorType` was previously an enum. If you referenced its members in your code, make sure to replace their
+    use cases with the newly added constants:
+    ```
+    from drf_standardized_errors.types import VALIDATION_ERROR, CLIENT_ERROR, SERVER_ERROR
+    ErrorType.VALIDATION_ERROR --> VALIDATION_ERROR
+    ErrorType.CLIENT_ERROR --> CLIENT_ERROR
+    ErrorType.SERVER_ERROR --> SERVER_ERROR
+    ```
 
 ## [0.14.1] - 2024-08-10
 ### Added

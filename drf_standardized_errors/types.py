@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from enum import Enum
-from typing import List, Optional, TypedDict
+from typing import Final, List, Literal, Optional, TypedDict
 
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -13,10 +12,10 @@ class ExceptionHandlerContext(TypedDict):
     request: Optional[Request]
 
 
-class ErrorType(str, Enum):
-    VALIDATION_ERROR = "validation_error"
-    CLIENT_ERROR = "client_error"
-    SERVER_ERROR = "server_error"
+VALIDATION_ERROR: Final = "validation_error"
+CLIENT_ERROR: Final = "client_error"
+SERVER_ERROR: Final = "server_error"
+ErrorType = Literal["validation_error", "client_error", "server_error"]
 
 
 @dataclass
