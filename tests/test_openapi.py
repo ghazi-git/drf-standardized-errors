@@ -630,6 +630,11 @@ def test_schema_generated(api_client):
     assert response.status_code == 200
 
 
+def test_protected_schema_response(api_client):
+    response = api_client.get("/protected-schema/")
+    assert response.status_code == 403
+
+
 @extend_schema_serializer(
     examples=[
         OpenApiExample(
