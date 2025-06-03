@@ -391,8 +391,8 @@ def get_serializer_for_validation_error_response(operation_id, field, error_code
 ```
 
 What remains is removing the default examples from the `AutoSchema` class or generating new ones that match the new
-error response output. Removing the default examples is easy and can be done by overriding `get_examples` and
-returning an empty list which leaves example generation up to the OpenAPI UI used (swagger UI, redoc, ...). But,
+error response output. Removing the default examples is easy and can be done by overriding `_get_error_response_examples`
+and returning an empty list which leaves example generation up to the OpenAPI UI used (swagger UI, redoc, ...). But,
 if you're picky about the examples and want to show that the `field_name` attribute is always `null` for errors
 other than validation errors, you can provide examples. Therefore, let's go with generating new examples for
 `403` and `404`.
