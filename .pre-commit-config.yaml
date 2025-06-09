@@ -9,10 +9,10 @@ repos:
       - id: check-yaml
 
   - repo: https://github.com/Zac-HD/shed
-    rev: 2024.10.1
+    rev: 2025.6.1
     hooks:
       - id: shed
-        additional_dependencies: [ 'black~=24.3' ]
+        additional_dependencies: [ 'black~=25.1' ]
         types_or: [ python, pyi, markdown, rst ]
 
   - repo: https://github.com/PyCQA/flake8
