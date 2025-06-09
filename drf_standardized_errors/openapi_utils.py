@@ -361,7 +361,7 @@ def has_validator(
 
 
 def get_error_codes_from_validators(
-    field: Union[serializers.Field, forms.Field]
+    field: Union[serializers.Field, forms.Field],
 ) -> Set[str]:
     error_codes = set()
 
