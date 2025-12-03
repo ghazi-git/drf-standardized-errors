@@ -1,8 +1,10 @@
 name: Coverage
 
 on:
-  - push
-  - pull_request
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   run:
