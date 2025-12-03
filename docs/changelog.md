@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ### Added
 - add support for python 3.14
 
+### Changed (backward-incompatible)
+- set minimum version of drf-spectacular to 0.29.0
+
 ## [0.15.0] - 2025-06-09
 ### Added
 - add support for python 3.13
