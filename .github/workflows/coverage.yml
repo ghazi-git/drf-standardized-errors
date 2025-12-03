@@ -1,22 +1,24 @@
 name: Coverage
 
 on:
-  - push
-  - pull_request
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.8
+          python-version: 3.12
       - name: Generate coverage report
         run: |
           pip install .
-          pip install django~=3.2 pytest pytest-django pytest-cov drf-spectacular django-filter
+          pip install django~=5.2 pytest pytest-django pytest-cov drf-spectacular django-filter
           pytest --cov --cov-report=xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
