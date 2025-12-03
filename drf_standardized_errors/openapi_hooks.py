@@ -2,6 +2,7 @@
 # since it's a copy of drf-spectacular postprocessing hook
 import re
 from collections import defaultdict
+from collections.abc import MutableMapping
 
 from drf_spectacular.hooks import postprocess_schema_enum_id_removal
 from drf_spectacular.plumbing import (
@@ -83,8 +84,8 @@ def postprocess_schema_enums(result, generator, **kwargs):
     for component_name, props in iter_prop_containers(schemas):
         for prop_name, prop_schema in props.items():
             if prop_schema.get("type") == "array":
-                prop_schema = prop_schema.get("items", {})
-            if "enum" not in prop_schema:
+                prop_schema = prop_schema.get("items")
+            if not isinstance(prop_schema, MutableMapping) or "enum" not in prop_schema:
                 continue
 
             prop_enum_cleaned_hash = extract_hash(prop_schema)
@@ -138,9 +139,9 @@ def postprocess_schema_enums(result, generator, **kwargs):
         for prop_name, prop_schema in props.items():
             is_array = prop_schema.get("type") == "array"
             if is_array:
-                prop_schema = prop_schema.get("items", {})
+                prop_schema = prop_schema.get("items")
 
-            if "enum" not in prop_schema:
+            if not isinstance(prop_schema, MutableMapping) or "enum" not in prop_schema:
                 continue
 
             prop_enum_original_list = prop_schema["enum"]
