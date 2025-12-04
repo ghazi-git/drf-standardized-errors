@@ -107,6 +107,17 @@ class CustomSerializer(serializers.Serializer):
 
 ## Tips and Tricks
 
+### Hide 404 error responses due to the `format` query parameter
+
+Set `REST_FRAMEWORK["URL_FORMAT_OVERRIDE"]"` to `None` if you're not relying on a query parameter for content
+negotiation. This avoids showing a 404 error response in the API schema for every operation.
+
+By default, DRF sets the value for `REST_FRAMEWORK["URL_FORMAT_OVERRIDE"]"` to `format`. That allows API consumers to
+send a `format` query parameter in every operation for content negotiation. If the API cannot handle the requested
+`format`, it will return a 404 error response. From the perspective of this package, that means every operation can
+return a 404 response when using the default content negotiator. Refer
+to [DRF docs](https://www.django-rest-framework.org/api-guide/settings/#url_format_override) for more information.
+
 ### Hide error responses that show in every operation
 
 By default, the error response for all supported status codes will be added to the schema. Some of these status
