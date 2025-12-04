@@ -205,7 +205,7 @@ class AutoSchema(BaseAutoSchema):
             ]
         )
         # the default content negotiator can raise a 404 when no renderer can handle
-        # to the format parameter in the URL
+        # the format parameter in the URL
         content_negotiator = self.view.get_content_negotiator()
         view_can_have_no_renderers = (
             self.view.format_kwarg or drf_settings.URL_FORMAT_OVERRIDE
@@ -218,7 +218,7 @@ class AutoSchema(BaseAutoSchema):
         )
 
     def _should_add_http405_error_response(self) -> bool:
-        # API consumers can at all ties use the wrong method against any endpoint
+        # API consumers can at all times use the wrong method against any endpoint
         return True
 
     def _should_add_http406_error_response(self) -> bool:
