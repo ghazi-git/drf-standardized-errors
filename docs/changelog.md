@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [UNRELEASED]
 ### Added
 - Add support for python 3.14
+- Add support for django 6.0
 
 ### Changed (backward-incompatible)
 - Set the minimum version of drf-spectacular to 0.29.0
