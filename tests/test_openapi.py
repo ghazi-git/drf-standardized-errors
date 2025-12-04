@@ -381,6 +381,19 @@ def test_404_error_when_url_parameters():
     assert "404" in responses
 
 
+def test_404_error_when_url_format_enabled(settings):
+    settings.REST_FRAMEWORK = {
+        **settings.REST_FRAMEWORK,
+        "URL_FORMAT_OVERRIDE": "format",
+    }
+
+    route = "not-found/"
+    view = DummyView.as_view()
+    schema = generate_view_schema(route, view)
+    responses = get_responses(schema, route)
+    assert "404" in responses
+
+
 def test_no_404_error():
     route = "not-found/"
     view = DummyView.as_view()

@@ -6,10 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
 ### Added
-- add support for python 3.14
+- Add support for python 3.14
 
 ### Changed (backward-incompatible)
-- set minimum version of drf-spectacular to 0.29.0
+- Set the minimum version of drf-spectacular to 0.29.0
+- Account for the `format` query parameter raising 404 errors when generating the API schema for error responses. This
+  will result in any project using the default value for `REST_FRAMEWORK["URL_FORMAT_OVERRIDE"]"` showing 404 errors for
+  every operation. That's because DRF enables the `format` query parameter in every endpoint by default. If you don't
+  need the `format` query parameter for content negotiation, you can disable it with by setting `"URL_FORMAT_OVERRIDE"`
+  to `None` in DRF settings. Refer
+  to [DRF docs](https://www.django-rest-framework.org/api-guide/settings/#url_format_override) for more information.
 
 ## [0.15.0] - 2025-06-09
 ### Added

@@ -17,6 +17,7 @@ from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.pagination import CursorPagination, PageNumberPagination
 from rest_framework.parsers import FileUploadParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.settings import api_settings as drf_settings
 from rest_framework.versioning import (
     AcceptHeaderVersioning,
     HostNameVersioning,
@@ -203,10 +204,17 @@ class AutoSchema(BaseAutoSchema):
                 if parameter["in"] == "path"
             ]
         )
+        # the default content negotiator can raise a 404 when no renderer can handle
+        # to the format parameter in the URL
+        content_negotiator = self.view.get_content_negotiator()
+        view_can_have_no_renderers = (
+            self.view.format_kwarg or drf_settings.URL_FORMAT_OVERRIDE
+        ) and isinstance(content_negotiator, DefaultContentNegotiation)
         return (
             paginator_can_raise_404
             or versioning_scheme_can_raise_404
             or has_path_parameters
+            or view_can_have_no_renderers
         )
 
     def _should_add_http405_error_response(self) -> bool:

@@ -23,6 +23,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [],
     "DEFAULT_PERMISSION_CLASSES": [],
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
+    "URL_FORMAT_OVERRIDE": None,
     "DEFAULT_SCHEMA_CLASS": "drf_standardized_errors.openapi.AutoSchema",
 }
 
