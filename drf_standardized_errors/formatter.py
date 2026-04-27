@@ -140,6 +140,6 @@ def flatten_errors(
                 fifo.append((value, key, None))
 
         else:
-            errors.append(Error(detail.code, str(detail), attr))
+            errors.append(Error(detail.code, str(detail), attr))  # type: ignore[union-attr]
 
     return errors
