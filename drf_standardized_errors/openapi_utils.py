@@ -1,6 +1,8 @@
 from dataclasses import dataclass, field as dataclass_field
 from typing import Any, Dict, List, Optional, Set, Type, Union
 
+import django
+import rest_framework
 from django import forms
 from django.core.validators import (
     DecimalValidator,
@@ -230,12 +232,18 @@ def add_unique_together_error_codes(
     sfields_with_error_codes: "List[InputDataField]",
 ) -> None:
     for sfield in sfields_with_unique_together_validators:
-        sfield.error_codes.add("unique")
         unique_together_validators = [
             validator
             for validator in sfield.field.validators
             if isinstance(validator, UniqueTogetherValidator)
         ]
+        if _drf_version() >= (3, 17) and django.VERSION >= (5, 0):
+            # drf 3.17 passes the `custom_violation_error` added in django 5.0
+            # to `drf.UniqueTogetherValidator`. Before that, the error code was
+            # hardcoded as `"unique"`
+            sfield.error_codes.update(v.code for v in unique_together_validators)
+        else:  # pragma: no cover
+            sfield.error_codes.add("unique")
         # fields involved in a unique together constraint have an implied
         # "required" state, so we're adding the "required" error code to them
         implicitly_required_fields = set()
@@ -501,3 +509,9 @@ def get_example_from_exception(exc: exceptions.APIException) -> OpenApiExample:
         response_only=True,
         status_codes=[str(exc.status_code)],
     )
+
+
+def _drf_version():
+    # we just care about major and minor drf versions
+    parts = rest_framework.VERSION.split(".")
+    return int(parts[0]), int(parts[1])
