@@ -16,6 +16,7 @@ from rest_framework.schemas.openapi import SchemaGenerator
 
 from drf_standardized_errors.openapi_utils import (
     InputDataField,
+    _drf_version,
     get_django_filter_backends,
     get_error_serializer,
     get_filter_forms,
@@ -370,6 +371,43 @@ def test_unique_together_error_codes(unique_together):
     assert "unique" in non_field_errors.error_codes
     assert "required" in app_label.error_codes
     assert "required" in model.error_codes
+
+
+@pytest.fixture
+def unique_together_with_violation_code():
+    from django.db import models
+
+    class SomeModel(models.Model):
+        app_label = models.CharField(max_length=100)
+        model = models.CharField(max_length=100)
+
+        class Meta:
+            constraints = [
+                models.UniqueConstraint(
+                    fields=["app_label", "model"],
+                    name="unique_model",
+                    violation_error_code="custom_violation_code",
+                )
+            ]
+
+    class SomeSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = SomeModel
+            fields = ["app_label", "model"]
+
+    return get_flat_serializer_fields(SomeSerializer())
+
+
+@pytest.mark.skipif(
+    _drf_version() < (3, 17) or django.VERSION < (5, 0),
+    reason="django added violation_error_code in v5 and drf supported it in v3.17",
+)
+def test_unique_together_new(unique_together_with_violation_code):
+    non_field_errors, _, __ = get_serializer_fields_with_error_codes(
+        unique_together_with_violation_code
+    )
+
+    assert "custom_violation_code" in non_field_errors.error_codes
 
 
 class PostSerializer(serializers.ModelSerializer):
