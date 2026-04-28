@@ -242,7 +242,7 @@ def add_unique_together_error_codes(
             # to `drf.UniqueTogetherValidator`. Before that, the error code was
             # hardcoded as `"unique"`
             sfield.error_codes.update(v.code for v in unique_together_validators)
-        else:
+        else:  # pragma: no cover
             sfield.error_codes.add("unique")
         # fields involved in a unique together constraint have an implied
         # "required" state, so we're adding the "required" error code to them
