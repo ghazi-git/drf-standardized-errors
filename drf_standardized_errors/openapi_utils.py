@@ -54,10 +54,11 @@ def get_flat_serializer_fields(
     field = force_instance(field)
     if is_list_serializer(field):
         prefix = get_prefix(prefix, field.field_name)
+        parent_fields = [InputDataField(prefix, field)] if prefix else []
         non_field_errors_name = get_prefix(prefix, drf_settings.NON_FIELD_ERRORS_KEY)
         f = InputDataField(non_field_errors_name, field)
         prefix = get_prefix(prefix, package_settings.LIST_INDEX_IN_API_SCHEMA)
-        return [f] + get_flat_serializer_fields(field.child, prefix)
+        return parent_fields + [f] + get_flat_serializer_fields(field.child, prefix)
     elif isinstance(field, PolymorphicProxySerializer):
         if isinstance(field.serializers, dict):
             return get_flat_serializer_fields(list(field.serializers.values()), prefix)
@@ -65,9 +66,14 @@ def get_flat_serializer_fields(
             return get_flat_serializer_fields(field.serializers, prefix)
     elif is_serializer(field):
         prefix = get_prefix(prefix, field.field_name)
+        parent_fields = [InputDataField(prefix, field)] if prefix else []
         non_field_errors_name = get_prefix(prefix, drf_settings.NON_FIELD_ERRORS_KEY)
         f = InputDataField(non_field_errors_name, field)
-        return [f] + get_flat_serializer_fields(list(field.fields.values()), prefix)
+        return (
+            parent_fields
+            + [f]
+            + get_flat_serializer_fields(list(field.fields.values()), prefix)
+        )
     elif isinstance(field, (list, tuple)):
         first, *remaining = field
         return get_flat_serializer_fields(first, prefix) + get_flat_serializer_fields(
@@ -454,20 +460,29 @@ def _get_attr_regex(attr: str) -> str:
     r"""
     - For ListSerializers:
         - input attr: "INDEX.field1", "INDEX.field2", ...
-        - regex generated: "\d+\.field1", "\d+\.field2", ...
+        - regex generated: "^\d+\.field1$", "^\d+\.field2$", ...
         - actual field name: "0.field1", "1.field2", ...
     - For ListFields:
         - input attr: "field.INDEX"
-        - regex generated: "field\.\d+"
+        - regex generated: "^field\.\d+$"
         - actual field name: "0.field1", "1.field2", ...
     - For DictFields:
         - input attr: "field.KEY"
-        - regex generated: "field\..+"
+        - regex generated: r"^field\.[\s\S]*$"
         - actual field name: "field.key1", "field.key2", ...
     - For other cases
         - input attr: "field.nested_field"
-        - regex generated: "field\.nested_field"
+        - regex generated: "^field\.nested_field$"
         - actual field name: "field.nested_field"
+
+    The pattern is anchored with ``^`` and ``$`` so that the ``oneOf`` of error
+    components remains mutually exclusive. Without anchors, the substring nature of
+    JSON Schema's ``pattern`` makes a value like ``field1.0`` match both ``field1``
+    (the field-level error) and ``field1\.\d+`` (the per-item error), so the value
+    validates against two ``oneOf`` branches at once. Tools that validate responses
+    against the schema (e.g. schemathesis) then report a conformance failure because
+    ``oneOf`` requires exactly one match. See
+    https://github.com/ghazi-git/drf-standardized-errors/issues/76.
     """
     parts = attr.split(package_settings.NESTED_FIELD_SEPARATOR)
     regex_parts = []
@@ -475,12 +490,12 @@ def _get_attr_regex(attr: str) -> str:
         if part == package_settings.LIST_INDEX_IN_API_SCHEMA:
             regex_parts.append(r"\d+")
         elif part == package_settings.DICT_KEY_IN_API_SCHEMA:
-            regex_parts.append(".+")
+            regex_parts.append(r"[\s\S]*")
         else:
             regex_parts.append(re.escape(part))
 
     escaped_separator = re.escape(package_settings.NESTED_FIELD_SEPARATOR)
-    return escaped_separator.join(regex_parts)
+    return f"^{escaped_separator.join(regex_parts)}$"
 
 
 def _get_error_component_name(operation_id: str, attr: Optional[str]) -> str:

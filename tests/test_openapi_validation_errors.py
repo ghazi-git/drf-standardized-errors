@@ -521,7 +521,7 @@ def test_pattern_for_list_serializer_field(viewset_with_nested_serializer):
     attr = schema["components"]["schemas"][
         "ValidateCreateGroupsINDEXNameErrorComponent"
     ]["properties"]["attr"]
-    assert attr["pattern"] == r"groups\.\d+\.name"
+    assert attr["pattern"] == r"^groups\.\d+\.name$"
 
 
 @pytest.fixture
@@ -548,9 +548,9 @@ def test_pattern_for_list_dict_fields(list_dict_fields_view):
     dict_attr = schema["components"]["schemas"][
         "ValidateCreateField1KEYErrorComponent"
     ]["properties"]["attr"]
-    assert dict_attr["pattern"] == r"field1\..+"
+    assert dict_attr["pattern"] == r"^field1\.[\s\S]*$"
 
     list_attr = schema["components"]["schemas"][
         "ValidateCreateField2INDEXErrorComponent"
     ]["properties"]["attr"]
-    assert list_attr["pattern"] == r"field2\.\d+"
+    assert list_attr["pattern"] == r"^field2\.\d+$"
