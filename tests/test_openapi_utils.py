@@ -51,15 +51,19 @@ def test_get_flat_serializer_fields():
     fields = get_flat_serializer_fields(CustomSerializer(many=True))
     expected_fields = {
         "non_field_errors",
+        "INDEX",
         "INDEX.non_field_errors",
         "INDEX.field1",
         "INDEX.field2",
         "INDEX.field2.INDEX",
+        "INDEX.field3",
         "INDEX.field3.non_field_errors",
         "INDEX.field3.nested_field1",
         "INDEX.field3.nested_field1.KEY",
         "INDEX.field3.nested_field2",
         "INDEX.field4.non_field_errors",
+        "INDEX.field4",
+        "INDEX.field4.INDEX",
         "INDEX.field4.INDEX.non_field_errors",
         "INDEX.field4.INDEX.nested_field1",
         "INDEX.field4.INDEX.nested_field1.KEY",
@@ -73,6 +77,7 @@ def test_get_flat_serializer_fields_with_nested_read_only():
     fields = get_flat_serializer_fields(CustomSerializerWithNestedReadOnly(many=True))
     expected_fields = {
         "non_field_errors",
+        "INDEX",
         "INDEX.non_field_errors",
         "INDEX.field1",
         "INDEX.field2",
@@ -659,7 +664,12 @@ def test_updated_error_component_name_suffix(settings):
 
 def test_list_index_in_api_schema():
     fields = get_flat_serializer_fields(UserSerializer(many=True))
-    expected_fields = {"non_field_errors", "INDEX.non_field_errors", "INDEX.name"}
+    expected_fields = {
+        "non_field_errors",
+        "INDEX",
+        "INDEX.non_field_errors",
+        "INDEX.name",
+    }
     assert {field.name for field in fields} == expected_fields
 
 
@@ -667,7 +677,12 @@ def test_updated_list_index_in_api_schema(settings):
     settings.DRF_STANDARDIZED_ERRORS = {"LIST_INDEX_IN_API_SCHEMA": "IDX"}
 
     fields = get_flat_serializer_fields(UserSerializer(many=True))
-    expected_fields = {"non_field_errors", "IDX.non_field_errors", "IDX.name"}
+    expected_fields = {
+        "non_field_errors",
+        "IDX",
+        "IDX.non_field_errors",
+        "IDX.name",
+    }
     assert {field.name for field in fields} == expected_fields
 
 
