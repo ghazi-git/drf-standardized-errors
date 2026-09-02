@@ -126,3 +126,22 @@ def test_exception_with_detail_empty():
     assert len(errors) == 1
     assert errors[0].attr == "some_field"
     assert errors[0].detail == ""
+
+
+@pytest.fixture
+def list_serializer_errors_indexed_dict():
+    # since DRF 3.18, ListSerializer.to_internal_value collects child errors in a
+    # dict keyed by the integer index of the item instead of a positional list.
+    return {
+        0: {"email": [ErrorDetail("Enter a valid email address.", code="invalid")]},
+        1: {"email": [ErrorDetail("Enter a valid email address.", code="invalid")]},
+    }
+
+
+def test_list_serializer_errors_indexed_dict(list_serializer_errors_indexed_dict):
+    errors = flatten_errors(list_serializer_errors_indexed_dict)
+    assert len(errors) == 2
+    assert errors[0].code == "invalid"
+    assert errors[0].attr == "0.email"
+    assert errors[1].code == "invalid"
+    assert errors[1].attr == "1.email"

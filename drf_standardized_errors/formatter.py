@@ -135,7 +135,7 @@ def flatten_errors(
 
         elif isinstance(detail, dict):
             for key, value in detail.items():
-                if attr:
+                if attr is not None:
                     key = f"{attr}{package_settings.NESTED_FIELD_SEPARATOR}{key}"
                 fifo.append((value, key, None))
 

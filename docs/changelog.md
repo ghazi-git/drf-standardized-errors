@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ## [UNRELEASED]
+### Fixed
+- Fix the `attr` of errors raised on the first item (index `0`) of a `many=True` list serializer losing its `0.`
+  index prefix with DRF 3.18, since `ListSerializer.to_internal_value` now collects child errors in a dict keyed by
+  the integer index of the item, and integer `0` was being treated as falsy.
 
 ## [0.16.0] - 2026-04-29
 ### Added
